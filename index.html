@@ -633,6 +633,7 @@
             gap: 8px;
             margin-bottom: 24px;
             border-bottom: 2px solid #e0e0e0;
+            overflow-x: auto;
         }
 
         .admin-tab {
@@ -646,6 +647,7 @@
             transition: all 0.3s ease;
             border-bottom: 3px solid transparent;
             margin-bottom: -2px;
+            white-space: nowrap;
         }
 
         .admin-tab:hover {
@@ -724,6 +726,83 @@
             box-shadow: 0 0 0 3px rgba(44, 82, 130, 0.1);
         }
 
+        /* ===== FILE UPLOAD AREA ===== */
+        .file-upload-area {
+            border: 2px dashed #2c5282;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            background: #f0f7ff;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 16px;
+        }
+
+        .file-upload-area:hover {
+            background: #e3f2fd;
+            border-color: #1565c0;
+        }
+
+        .file-upload-area.dragover {
+            background: #e3f2fd;
+            border-color: #1565c0;
+            transform: scale(1.02);
+        }
+
+        .file-upload-area i {
+            font-size: 40px;
+            color: #2c5282;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .file-upload-area p {
+            color: #2c5282;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .file-upload-area small {
+            color: #666;
+            font-size: 12px;
+            display: block;
+            margin-top: 8px;
+        }
+
+        #fileUploadSection {
+            display: none;
+        }
+
+        .file-list {
+            background: #f0f0f0;
+            padding: 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+
+        .file-item {
+            padding: 12px;
+            background: #ffffff;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .file-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .file-item strong {
+            color: #1a1a1a;
+        }
+
+        .file-item small {
+            color: #999;
+        }
+
         .modal-btn {
             width: 100%;
             padding: 12px;
@@ -735,11 +814,21 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            margin-top: 8px;
         }
 
         .modal-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(44, 82, 130, 0.4);
+        }
+
+        .modal-btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .modal-btn-secondary:hover {
+            background: #d0d0d0;
         }
 
         .archived-list,
@@ -1193,13 +1282,17 @@
                 </div>
             </div>
 
-            <!-- Add Section Tab -->
+            <!-- Add Section Tab (WITH FILE UPLOAD) -->
             <div id="sectionTab" class="admin-tab-content">
                 <div class="admin-section">
-                    <h3><i class="fas fa-plus"></i> Create New Section</h3>
-                    <p>Add a new section or subcategory to the helpdesk system.</p>
+                    <h3><i class="fas fa-plus"></i> Create New Section & Upload Files</h3>
+                    <p>Add a new section to the helpdesk and upload files directly to it.</p>
                 </div>
+
                 <form onsubmit="handleAddSection(event)">
+                    <!-- Section Details -->
+                    <h4 style="color: #1a1a1a; font-size: 14px; font-weight: 600; margin-bottom: 16px; margin-top: 0;">Section Details</h4>
+                    
                     <div class="form-group-modal">
                         <label for="sectionCategory">Main Category</label>
                         <select id="sectionCategory" required>
@@ -1210,21 +1303,50 @@
                             <option value="Templates">Templates</option>
                         </select>
                     </div>
+
                     <div class="form-group-modal">
                         <label for="sectionName">Section Name</label>
                         <input type="text" id="sectionName" placeholder="e.g., New Department" required>
                     </div>
+
                     <div class="form-group-modal">
                         <label for="sectionDescription">Description (Optional)</label>
                         <textarea id="sectionDescription" placeholder="Enter section description..." rows="3"></textarea>
                     </div>
-                    <button type="submit" class="modal-btn">Create Section</button>
+
+                    <!-- File Upload Section -->
+                    <h4 style="color: #1a1a1a; font-size: 14px; font-weight: 600; margin-bottom: 16px; margin-top: 24px;">Upload Files to Section</h4>
+
+                    <!-- Drag & Drop Area -->
+                    <div class="file-upload-area" id="fileDropArea" onclick="document.getElementById('sectionFileInput').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Drag files here or click to browse</p>
+                        <small>Supported formats: PDF, XLSX, XLS (Max 50MB each)</small>
+                    </div>
+
+                    <input type="file" id="sectionFileInput" multiple accept=".pdf,.xlsx,.xls" style="display: none;">
+
+                    <!-- File List -->
+                    <div id="fileList" class="file-list" style="display: none;">
+                        <strong style="color: #1a1a1a; display: block; margin-bottom: 12px;">Files to Upload:</strong>
+                        <div id="fileListItems"></div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <button type="submit" class="modal-btn">
+                        <i class="fas fa-check-circle"></i> Create Section & Upload Files
+                    </button>
+                    <button type="button" class="modal-btn modal-btn-secondary" onclick="resetSectionForm()">
+                        <i class="fas fa-redo"></i> Reset Form
+                    </button>
                 </form>
             </div>
         </div>
     </div>
 
     <script>
+        let uploadedFiles = [];
+
         // ===== LOGIN FUNCTIONALITY =====
         function handleLogin(event) {
             event.preventDefault();
@@ -1233,25 +1355,20 @@
             const password = document.getElementById('password').value;
             const errorMessage = document.getElementById('errorMessage');
 
-            // Check for admin credentials
             const isAdmin = (email === 'admin@example.com' && password === 'admin123');
 
             if (email && password) {
-                // Hide login page, show main page
                 document.getElementById('loginPage').style.display = 'none';
                 document.getElementById('mainPage').classList.add('show');
                 
-                // Show admin toolbar if admin
                 if (isAdmin) {
                     document.getElementById('adminToolbar').style.display = 'flex';
                 }
                 
-                // Store user info
                 localStorage.setItem('userEmail', email);
                 localStorage.setItem('isAdmin', isAdmin);
                 localStorage.setItem('isLoggedIn', 'true');
                 
-                // Set admin email in modal
                 document.getElementById('adminEmailDisplay').textContent = email;
             } else {
                 errorMessage.textContent = 'Please enter valid email and password';
@@ -1285,6 +1402,9 @@
                 }
                 document.getElementById('adminEmailDisplay').textContent = localStorage.getItem('userEmail');
             }
+            
+            // File upload listeners
+            setupFileUpload();
         });
 
         // ===== ACCORDION FUNCTIONALITY =====
@@ -1295,12 +1415,10 @@
                 const item = this.closest('.accordion-item');
                 const isActive = item.classList.contains('active');
                 
-                // Close all items
                 document.querySelectorAll('.accordion-item').forEach(el => {
                     el.classList.remove('active');
                 });
                 
-                // Open clicked item if it wasn't active
                 if (!isActive) {
                     item.classList.add('active');
                 }
@@ -1330,33 +1448,106 @@
         }
 
         function switchAdminTab(tabName) {
-            // Hide all tabs
             document.querySelectorAll('.admin-tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
             
-            // Remove active class from all buttons
             document.querySelectorAll('.admin-tab').forEach(btn => {
                 btn.classList.remove('active');
             });
             
-            // Show selected tab
             document.getElementById(tabName + 'Tab').classList.add('active');
             
-            // Add active class to button
-            event.target.closest('.admin-tab').classList.add('active');
+            if (event && event.target) {
+                event.target.closest('.admin-tab').classList.add('active');
+            }
         }
 
         function closeAdminModal() {
             document.getElementById('adminModal').classList.remove('show');
+            resetSectionForm();
         }
 
-        // Close modal when clicking outside of content
         window.addEventListener('click', function(event) {
             if (event.target.id === 'adminModal') {
                 event.target.classList.remove('show');
+                resetSectionForm();
             }
         });
+
+        // ===== FILE UPLOAD FUNCTIONALITY =====
+        function setupFileUpload() {
+            const fileDropArea = document.getElementById('fileDropArea');
+            const fileInput = document.getElementById('sectionFileInput');
+
+            // Drag and drop
+            fileDropArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileDropArea.classList.add('dragover');
+            });
+
+            fileDropArea.addEventListener('dragleave', () => {
+                fileDropArea.classList.remove('dragover');
+            });
+
+            fileDropArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileDropArea.classList.remove('dragover');
+                handleFiles(e.dataTransfer.files);
+            });
+
+            // File input change
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+        }
+
+        function handleFiles(files) {
+            uploadedFiles = Array.from(files);
+            updateFileList();
+        }
+
+        function updateFileList() {
+            const fileList = document.getElementById('fileList');
+            const fileListItems = document.getElementById('fileListItems');
+
+            if (uploadedFiles.length === 0) {
+                fileList.style.display = 'none';
+                return;
+            }
+
+            fileList.style.display = 'block';
+            fileListItems.innerHTML = '';
+
+            uploadedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div>
+                        <strong>${file.name}</strong>
+                        <small>${(file.size / 1024).toFixed(2)} KB</small>
+                    </div>
+                    <button type="button" style="padding: 4px 8px; background: #f44336; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;" onclick="removeFile(${index})">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
+                `;
+                fileListItems.appendChild(fileItem);
+            });
+        }
+
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            updateFileList();
+        }
+
+        function resetSectionForm() {
+            document.getElementById('sectionName').value = '';
+            document.getElementById('sectionCategory').value = '';
+            document.getElementById('sectionDescription').value = '';
+            document.getElementById('sectionFileInput').value = '';
+            uploadedFiles = [];
+            updateFileList();
+        }
 
         // ===== FORM HANDLERS =====
         function handleAddFile(event) {
@@ -1371,8 +1562,15 @@
             event.preventDefault();
             const sectionName = document.getElementById('sectionName').value;
             const sectionCategory = document.getElementById('sectionCategory').value;
-            alert(`Section "${sectionName}" has been created under ${sectionCategory}`);
-            document.getElementById('sectionTab').querySelector('form').reset();
+            const fileCount = uploadedFiles.length;
+
+            let message = `Section "${sectionName}" has been created under ${sectionCategory}`;
+            if (fileCount > 0) {
+                message += `\n${fileCount} file(s) uploaded to this section`;
+            }
+
+            alert(message);
+            resetSectionForm();
         }
 
         // ===== USER PROFILE =====
