@@ -128,12 +128,27 @@
         .demo-credentials {
             background: #e3f2fd;
             border: 1px solid #bbdefb;
-            padding: 12px;
+            padding: 16px;
             border-radius: 6px;
             font-size: 12px;
             color: #1565c0;
             margin-top: 16px;
-            text-align: center;
+            text-align: left;
+            line-height: 1.6;
+        }
+
+        .demo-credentials strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .credential-item {
+            margin-bottom: 6px;
+        }
+
+        .credential-item:last-child {
+            margin-bottom: 0;
         }
 
         .remember-me {
@@ -172,7 +187,7 @@
             75% { transform: translateX(10px); }
         }
 
-        /* ===== MAIN PAGE (Hidden by default) ===== */
+        /* ===== MAIN PAGE ===== */
         .main-page {
             display: none;
             flex: 1;
@@ -769,10 +784,6 @@
             margin-top: 8px;
         }
 
-        #fileUploadSection {
-            display: none;
-        }
-
         .file-list {
             background: #f0f0f0;
             padding: 16px;
@@ -959,7 +970,7 @@
         <div class="login-box">
             <div class="login-header">
                 <div class="login-logo">ORACLE</div>
-                <div class="login-title">Helpdesk System</div>
+                <div class="login-title">Pharmacy Helpdesk</div>
                 <div class="login-subtitle">Sign in to your account</div>
             </div>
 
@@ -968,7 +979,7 @@
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
                 </div>
 
                 <div class="form-group">
@@ -984,8 +995,9 @@
                 </div>
 
                 <div class="demo-credentials">
-                    <strong>Demo Credentials:</strong><br>
-                    Email: admin@example.com | Password: admin123
+                    <strong>🔐 Admin Credentials:</strong>
+                    <div class="credential-item"><strong>Username:</strong> ORA.Heldpesk@admin.com</div>
+                    <div class="credential-item"><strong>Password:</strong> @Smjbolotaulo</div>
                 </div>
             </form>
         </div>
@@ -1214,7 +1226,7 @@
                         <button style="padding: 6px 12px; background: #2c5282; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">Restore</button>
                     </div>
                 </div>
-                <p style="color: #999; font-size: 12px; margin-top: 12px; text-align: center;">2 archived files • Last updated: 2024-03-20</p>
+                <p style="color: #999; font-size: 12px; margin-top: 12px; text-align: center;">2 archived files • Last updated: 2024-03-25</p>
             </div>
 
             <!-- Add Files Tab -->
@@ -1255,11 +1267,11 @@
                 <div class="admin-info">
                     <div class="info-item">
                         <strong>Logged in as:</strong>
-                        <span id="adminEmailDisplay">admin@example.com</span>
+                        <span id="adminEmailDisplay">ORA.Heldpesk@admin.com</span>
                     </div>
                     <div class="info-item">
                         <strong>Role:</strong>
-                        <span>Administrator</span>
+                        <span>System Administrator</span>
                     </div>
                     <div class="info-item">
                         <strong>Access Level:</strong>
@@ -1306,7 +1318,7 @@
 
                     <div class="form-group-modal">
                         <label for="sectionName">Section Name</label>
-                        <input type="text" id="sectionName" placeholder="e.g., New Department" required>
+                        <input type="text" id="sectionName" placeholder="e.g., Special Reports, New Department" required>
                     </div>
 
                     <div class="form-group-modal">
@@ -1355,7 +1367,8 @@
             const password = document.getElementById('password').value;
             const errorMessage = document.getElementById('errorMessage');
 
-            const isAdmin = (email === 'admin@example.com' && password === 'admin123');
+            // Check for admin credentials
+            const isAdmin = (email === 'ORA.Heldpesk@admin.com' && password === '@Smjbolotaulo');
 
             if (email && password) {
                 document.getElementById('loginPage').style.display = 'none';
@@ -1371,11 +1384,11 @@
                 
                 document.getElementById('adminEmailDisplay').textContent = email;
             } else {
-                errorMessage.textContent = 'Please enter valid email and password';
+                errorMessage.textContent = 'Invalid email or password. Please try again.';
                 errorMessage.classList.add('show');
                 setTimeout(() => {
                     errorMessage.classList.remove('show');
-                }, 3000);
+                }, 4000);
             }
         }
 
@@ -1403,7 +1416,6 @@
                 document.getElementById('adminEmailDisplay').textContent = localStorage.getItem('userEmail');
             }
             
-            // File upload listeners
             setupFileUpload();
         });
 
@@ -1480,7 +1492,6 @@
             const fileDropArea = document.getElementById('fileDropArea');
             const fileInput = document.getElementById('sectionFileInput');
 
-            // Drag and drop
             fileDropArea.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 fileDropArea.classList.add('dragover');
@@ -1496,7 +1507,6 @@
                 handleFiles(e.dataTransfer.files);
             });
 
-            // File input change
             fileInput.addEventListener('change', (e) => {
                 handleFiles(e.target.files);
             });
@@ -1554,7 +1564,7 @@
             event.preventDefault();
             const fileName = document.getElementById('fileName').value;
             const fileCategory = document.getElementById('fileCategory').value;
-            alert(`File "${fileName}" has been added to ${fileCategory}`);
+            alert(`✓ File "${fileName}" has been added to ${fileCategory}`);
             document.getElementById('addTab').querySelector('form').reset();
         }
 
@@ -1564,9 +1574,9 @@
             const sectionCategory = document.getElementById('sectionCategory').value;
             const fileCount = uploadedFiles.length;
 
-            let message = `Section "${sectionName}" has been created under ${sectionCategory}`;
+            let message = `✓ Section "${sectionName}" has been created under ${sectionCategory}`;
             if (fileCount > 0) {
-                message += `\n${fileCount} file(s) uploaded to this section`;
+                message += `\n✓ ${fileCount} file(s) uploaded to this section`;
             }
 
             alert(message);
@@ -1575,7 +1585,7 @@
 
         // ===== USER PROFILE =====
         function toggleUserMenu() {
-            alert('User Profile - ' + localStorage.getItem('userEmail'));
+            alert('👤 User Profile: ' + localStorage.getItem('userEmail'));
         }
     </script>
 </body>
