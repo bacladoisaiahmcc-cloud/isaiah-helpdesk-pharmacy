@@ -20,6 +20,158 @@
             flex-direction: column;
         }
 
+        /* ===== LOGIN PAGE ===== */
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2c5282 0%, #1e3a5f 100%);
+        }
+
+        .login-box {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            padding: 50px;
+            width: 100%;
+            max-width: 400px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-logo {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c5282;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        .login-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .login-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2c5282;
+            box-shadow: 0 0 0 3px rgba(44, 82, 130, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #2c5282 0%, #1e3a5f 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 16px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(44, 82, 130, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+            margin-top: 16px;
+        }
+
+        .remember-me input {
+            cursor: pointer;
+        }
+
+        .error-message {
+            display: none;
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* ===== MAIN PAGE (Hidden by default) ===== */
+        .main-page {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+        }
+
+        .main-page.show {
+            display: flex;
+        }
+
         /* ===== HEADER ===== */
         header {
             background: linear-gradient(135deg, #2c5282 0%, #1e3a5f 100%);
@@ -140,7 +292,24 @@
             overflow: hidden;
             transition: all 0.3s ease;
             border: 1px solid #e8e8e8;
+            animation: slideIn 0.5s ease-out forwards;
         }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .accordion-item:nth-child(1) { animation-delay: 0.05s; }
+        .accordion-item:nth-child(2) { animation-delay: 0.1s; }
+        .accordion-item:nth-child(3) { animation-delay: 0.15s; }
+        .accordion-item:nth-child(4) { animation-delay: 0.2s; }
 
         .accordion-item:hover {
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
@@ -294,34 +463,40 @@
             font-size: 13px;
         }
 
-        /* ===== FLOAT USER BUTTON ===== */
-        .float-user-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #2c5282 0%, #1e3a5f 100%);
-            color: #ffffff;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            transition: all 0.3s ease;
-            z-index: 1000;
+        footer a {
+            color: #2c5282;
+            text-decoration: none;
         }
 
-        .float-user-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== LOGOUT BUTTON ===== */
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
         }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
+            .login-box {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+
             header {
                 flex-direction: column;
                 gap: 16px;
@@ -337,6 +512,7 @@
 
             .header-right {
                 width: 100%;
+                flex-direction: column;
             }
 
             .search-box {
@@ -345,10 +521,6 @@
 
             .search-box input:focus {
                 width: 100%;
-            }
-
-            .header-title {
-                font-size: 20px;
             }
 
             .container {
@@ -362,262 +534,257 @@
             .accordion-item.active .accordion-body {
                 padding: 16px 20px;
             }
-
-            .accordion-title {
-                font-size: 15px;
-            }
-
-            .float-user-btn {
-                bottom: 20px;
-                right: 20px;
-                width: 48px;
-                height: 48px;
-                font-size: 20px;
-            }
         }
-
-        /* ===== ANIMATIONS ===== */
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .accordion-item {
-            animation: slideIn 0.5s ease-out forwards;
-        }
-
-        .accordion-item:nth-child(1) { animation-delay: 0.05s; }
-        .accordion-item:nth-child(2) { animation-delay: 0.1s; }
-        .accordion-item:nth-child(3) { animation-delay: 0.15s; }
-        .accordion-item:nth-child(4) { animation-delay: 0.2s; }
-        .accordion-item:nth-child(5) { animation-delay: 0.25s; }
-        .accordion-item:nth-child(6) { animation-delay: 0.3s; }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="header-left">
-            <div class="oracle-logo">ORACLE</div>
-            <div class="header-title">How can we help you today?</div>
-        </div>
-        <div class="header-right">
-            <div class="search-box">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" id="searchInput" placeholder="Search...">
-            </div>
-            <div class="user-profile" title="User Profile">
-                <i class="fas fa-user"></i>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Container -->
-    <div class="container">
-        <div class="accordion">
-            <!-- Working Instructions -->
-            <div class="accordion-item">
-                <div class="accordion-header">
-                    <div class="accordion-header-content">
-                        <div class="accordion-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <line x1="12" y1="13" x2="8" y2="13"></line>
-                                <line x1="12" y1="17" x2="8" y2="17"></line>
-                            </svg>
-                        </div>
-                        <div class="accordion-title">Working Instructions</div>
-                    </div>
-                    <div class="accordion-toggle">
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                </div>
-                <div class="accordion-body">
-                    <div class="accordion-content">
-                        <ul>
-                            <li><a href="#receivables">Receivables - Maintenance & Procedures</a></li>
-                            <li><a href="#payables">Payables - Maintenance & Procedures</a></li>
-                            <li><a href="#purchasing">Purchasing - Maintenance & Procedures</a></li>
-                            <li><a href="#fixed-assets">Fixed Assets - Maintenance & Procedures</a></li>
-                            <li><a href="#cash-management">Cash Management - Maintenance & Procedures</a></li>
-                            <li><a href="#inventory">Inventory Management - Maintenance</a></li>
-                        </ul>
-                    </div>
-                </div>
+    <!-- ===== LOGIN PAGE ===== -->
+    <div id="loginPage" class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <div class="login-logo">ORACLE</div>
+                <div class="login-title">Helpdesk System</div>
+                <div class="login-subtitle">Sign in to your account</div>
             </div>
 
-            <!-- Standard Operating Procedures -->
-            <div class="accordion-item">
-                <div class="accordion-header">
-                    <div class="accordion-header-content">
-                        <div class="accordion-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
-                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                <line x1="9" y1="9" x2="15" y2="9"></line>
-                                <line x1="9" y1="13" x2="15" y2="13"></line>
-                                <line x1="9" y1="17" x2="13" y2="17"></line>
-                            </svg>
-                        </div>
-                        <div class="accordion-title">Standard Operating Procedures</div>
-                    </div>
-                    <div class="accordion-toggle">
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                </div>
-                <div class="accordion-body">
-                    <div class="accordion-content">
-                        <ul>
-                            <li><a href="#sop-finance">Finance - AR, AP, General Ledger, Inventory Control, Tax</a></li>
-                            <li><a href="#sop-treasury">Treasury - Check-run, Bank Control, Cash Flow</a></li>
-                            <li><a href="#sop-hr">HR - Payroll & Timekeeping</a></li>
-                            <li><a href="#sop-it">IT - Application & Infrastructure</a></li>
-                            <li><a href="#sop-memo">Finance Memo - Decision Authority</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+            <div class="error-message" id="errorMessage"></div>
 
-            <!-- Functional Specifications -->
-            <div class="accordion-item">
-                <div class="accordion-header">
-                    <div class="accordion-header-content">
-                        <div class="accordion-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
-                                <circle cx="12" cy="12" r="1"></circle>
-                                <path d="M12 1v6m0 6v6"></path>
-                                <path d="M4.22 4.22l4.24 4.24m3.08 3.08l4.24 4.24"></path>
-                                <path d="M1 12h6m6 0h6"></path>
-                                <path d="M4.22 19.78l4.24-4.24m3.08-3.08l4.24-4.24"></path>
-                            </svg>
-                        </div>
-                        <div class="accordion-title">Functional Specifications</div>
-                    </div>
-                    <div class="accordion-toggle">
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" required>
                 </div>
-                <div class="accordion-body">
-                    <div class="accordion-content">
-                        <ul>
-                            <li><a href="#fs-receivables">Receivables - Collections, Invoices, Credit Memos</a></li>
-                            <li><a href="#fs-payables">Payables - AP Invoicing & Vendor Interface</a></li>
-                            <li><a href="#fs-gl">General Ledger - Budget Automation</a></li>
-                            <li><a href="#fs-hr">HR - Employee PO Card Integration</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Process Flow -->
-            <div class="accordion-item">
-                <div class="accordion-header">
-                    <div class="accordion-header-content">
-                        <div class="accordion-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
-                                <rect x="3" y="3" width="7" height="7"></rect>
-                                <rect x="14" y="3" width="7" height="7"></rect>
-                                <rect x="14" y="14" width="7" height="7"></rect>
-                                <rect x="3" y="14" width="7" height="7"></rect>
-                            </svg>
-                        </div>
-                        <div class="accordion-title">Process Flow</div>
-                    </div>
-                    <div class="accordion-toggle">
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
                 </div>
-                <div class="accordion-body">
-                    <div class="accordion-content">
-                        <ul>
-                            <li><a href="#pf-finance">Finance Process Flows</a></li>
-                            <li><a href="#pf-treasury">Treasury Process Flows</a></li>
-                            <li><a href="#pf-hr">HR Process Flows</a></li>
-                            <li><a href="#pf-it">IT Process Flows</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
 
-            <!-- System Flow -->
-            <div class="accordion-item">
-                <div class="accordion-header">
-                    <div class="accordion-header-content">
-                        <div class="accordion-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
-                                <polygon points="12,2 20,7 20,17 12,22 4,17 4,7" fill="none" stroke="currentColor" stroke-width="2"></polygon>
-                                <line x1="12" y1="12" x2="4" y2="7" stroke="currentColor" stroke-width="1"></line>
-                                <line x1="12" y1="12" x2="20" y2="7" stroke="currentColor" stroke-width="1"></line>
-                            </svg>
-                        </div>
-                        <div class="accordion-title">System Flow</div>
-                    </div>
-                    <div class="accordion-toggle">
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                </div>
-                <div class="accordion-body">
-                    <div class="accordion-content">
-                        <ul>
-                            <li><a href="#sf-receivables">Receivables System Flows</a></li>
-                            <li><a href="#sf-payables">Payables System Flows</a></li>
-                            <li><a href="#sf-purchasing">Purchasing System Flows</a></li>
-                            <li><a href="#sf-fixed-assets">Fixed Assets System Flows</a></li>
-                            <li><a href="#sf-cash">Cash Management System Flows</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+                <button type="submit" class="login-btn">Sign In</button>
 
-            <!-- Templates -->
-            <div class="accordion-item">
-                <div class="accordion-header">
-                    <div class="accordion-header-content">
-                        <div class="accordion-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"></path>
-                                <line x1="7" y1="10" x2="17" y2="10"></line>
-                                <line x1="7" y1="14" x2="17" y2="14"></line>
-                            </svg>
-                        </div>
-                        <div class="accordion-title">Templates</div>
-                    </div>
-                    <div class="accordion-toggle">
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
+                <div class="remember-me">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember" style="margin: 0;">Remember me</label>
                 </div>
-                <div class="accordion-body">
-                    <div class="accordion-content">
-                        <ul>
-                            <li><a href="#forms">Cash Advance Liquidation Form</a></li>
-                            <li><a href="#forms">Cash Advance Form</a></li>
-                            <li><a href="#forms">Employee Reimbursement Form</a></li>
-                            <li><a href="#forms">User Access Request Form</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2024 Oracle Pharmacy Helpdesk System. All rights reserved. | <a href="#" style="color: #2c5282; text-decoration: none;">Privacy</a> | <a href="#" style="color: #2c5282; text-decoration: none;">Contact Support</a></p>
-    </footer>
+    <!-- ===== MAIN PAGE ===== -->
+    <div id="mainPage" class="main-page">
+        <!-- Header -->
+        <header>
+            <div class="header-left">
+                <div class="oracle-logo">ORACLE</div>
+                <div class="header-title">How can we help you today?</div>
+            </div>
+            <div class="header-right">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Search...">
+                </div>
+                <div class="user-profile" title="User Profile" onclick="toggleUserMenu()">
+                    <i class="fas fa-user"></i>
+                </div>
+                <button class="logout-btn" onclick="handleLogout()">Logout</button>
+            </div>
+        </header>
 
-    <!-- Floating User Button -->
-    <button class="float-user-btn" title="User Profile">
-        <i class="fas fa-user"></i>
-    </button>
+        <!-- Main Container -->
+        <div class="container">
+            <div class="accordion">
+                <!-- Working Instructions -->
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-header-content">
+                            <div class="accordion-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="12" y1="13" x2="8" y2="13"></line>
+                                    <line x1="12" y1="17" x2="8" y2="17"></line>
+                                </svg>
+                            </div>
+                            <div class="accordion-title">Working Instructions</div>
+                        </div>
+                        <div class="accordion-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-content">
+                            <ul>
+                                <li><a href="#receivables">Receivables - Maintenance & Procedures</a></li>
+                                <li><a href="#payables">Payables - Maintenance & Procedures</a></li>
+                                <li><a href="#purchasing">Purchasing - Maintenance & Procedures</a></li>
+                                <li><a href="#fixed-assets">Fixed Assets - Maintenance & Procedures</a></li>
+                                <li><a href="#cash-management">Cash Management - Maintenance & Procedures</a></li>
+                                <li><a href="#inventory">Inventory Management - Maintenance</a></li>
+                                <li><a href="#hrms">HRMS Global - Maintenance</a></li>
+                                <li><a href="#general-ledger">General Ledger - Maintenance & Procedures</a></li>
+                                <li><a href="#oracle-guides">Oracle Guides - How to Login & Navigation</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Standard Operating Procedures -->
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-header-content">
+                            <div class="accordion-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="9" y1="9" x2="15" y2="9"></line>
+                                    <line x1="9" y1="13" x2="15" y2="13"></line>
+                                    <line x1="9" y1="17" x2="13" y2="17"></line>
+                                </svg>
+                            </div>
+                            <div class="accordion-title">Standard Operating Procedures</div>
+                        </div>
+                        <div class="accordion-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-content">
+                            <ul>
+                                <li><a href="#sop-finance-ar">Finance - Accounts Receivable</a></li>
+                                <li><a href="#sop-finance-ap">Finance - Accounts Payable</a></li>
+                                <li><a href="#sop-finance-sales">Finance - Sales Audit</a></li>
+                                <li><a href="#sop-finance-gl">Finance - General Ledger</a></li>
+                                <li><a href="#sop-finance-inv">Finance - Inventory Control</a></li>
+                                <li><a href="#sop-finance-tax">Finance - Tax</a></li>
+                                <li><a href="#sop-treasury-check">Treasury - Check-run</a></li>
+                                <li><a href="#sop-treasury-bank">Treasury - Bank Control</a></li>
+                                <li><a href="#sop-treasury-cash">Treasury - Cash Flow</a></li>
+                                <li><a href="#sop-hr-payroll">HR - Payroll</a></li>
+                                <li><a href="#sop-hr-time">HR - Timekeeping</a></li>
+                                <li><a href="#sop-it-app">IT - Application</a></li>
+                                <li><a href="#sop-it-infra">IT - Infrastructure</a></li>
+                                <li><a href="#sop-finance-memo">Finance Memo - Decision Authority</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Functional Specifications -->
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-header-content">
+                            <div class="accordion-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="1"></circle>
+                                    <path d="M12 1v6m0 6v6"></path>
+                                    <path d="M4.22 4.22l4.24 4.24m3.08 3.08l4.24 4.24"></path>
+                                    <path d="M1 12h6m6 0h6"></path>
+                                    <path d="M4.22 19.78l4.24-4.24m3.08-3.08l4.24-4.24"></path>
+                                </svg>
+                            </div>
+                            <div class="accordion-title">Functional Specifications</div>
+                        </div>
+                        <div class="accordion-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-content">
+                            <ul>
+                                <li><a href="#fs-receivables">Receivables - Collections, Invoices, Credit Memos, E-Billing</a></li>
+                                <li><a href="#fs-receivables-interface">Receivables - AR Invoice & Customer Interface</a></li>
+                                <li><a href="#fs-payables">Payables - AP Invoice Listing</a></li>
+                                <li><a href="#fs-payables-vendor">Payables - AP Vendor Interface Enhancement</a></li>
+                                <li><a href="#fs-gl">General Ledger - Budget Monitoring Workflow</a></li>
+                                <li><a href="#fs-hr">HR - Employee PO Card Integration</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Templates -->
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-header-content">
+                            <div class="accordion-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"></path>
+                                    <line x1="7" y1="10" x2="17" y2="10"></line>
+                                    <line x1="7" y1="14" x2="17" y2="14"></line>
+                                </svg>
+                            </div>
+                            <div class="accordion-title">Templates</div>
+                        </div>
+                        <div class="accordion-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-content">
+                            <ul>
+                                <li><a href="#forms-cash-liq">Cash Advance Liquidation Form</a></li>
+                                <li><a href="#forms-cash-adv">Cash Advance Form</a></li>
+                                <li><a href="#forms-reimburse">Employee Reimbursement Form</a></li>
+                                <li><a href="#forms-access">User Access Request Form</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>&copy; 2024 Oracle Pharmacy Helpdesk System. All rights reserved. | <a href="#">Privacy</a> | <a href="#">Contact Support</a></p>
+        </footer>
+    </div>
 
     <script>
-        // Accordion functionality
+        // ===== LOGIN FUNCTIONALITY =====
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Simple validation (you can connect to a real backend)
+            if (email && password) {
+                // Hide login page, show main page
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('mainPage').classList.add('show');
+                
+                // Store user info (in real app, this comes from backend)
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('isLoggedIn', 'true');
+            } else {
+                errorMessage.textContent = 'Please enter valid email and password';
+                errorMessage.classList.add('show');
+                setTimeout(() => {
+                    errorMessage.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        // ===== LOGOUT FUNCTIONALITY =====
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('isLoggedIn');
+                document.getElementById('mainPage').classList.remove('show');
+                document.getElementById('loginPage').style.display = 'flex';
+                document.getElementById('loginForm').reset();
+            }
+        }
+
+        // ===== CHECK IF ALREADY LOGGED IN =====
+        window.addEventListener('load', function() {
+            if (localStorage.getItem('isLoggedIn') === 'true') {
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('mainPage').classList.add('show');
+            }
+        });
+
+        // ===== ACCORDION FUNCTIONALITY =====
         const accordionHeaders = document.querySelectorAll('.accordion-header');
         
         accordionHeaders.forEach(header => {
@@ -637,7 +804,7 @@
             });
         });
 
-        // Search functionality
+        // ===== SEARCH FUNCTIONALITY =====
         const searchInput = document.getElementById('searchInput');
         searchInput.addEventListener('keyup', function(e) {
             const searchTerm = this.value.toLowerCase();
@@ -653,14 +820,10 @@
             });
         });
 
-        // User profile button click
-        document.querySelector('.float-user-btn').addEventListener('click', function() {
-            alert('User Profile Portal - Feature coming soon!');
-        });
-
-        document.querySelector('.user-profile').addEventListener('click', function() {
-            alert('User Profile Portal - Feature coming soon!');
-        });
+        // ===== USER MENU TOGGLE =====
+        function toggleUserMenu() {
+            alert('User Profile - Coming Soon!');
+        }
     </script>
 </body>
 </html>
