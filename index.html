@@ -16,7 +16,6 @@
     :root { --oracle-blue: #234e70; --bg-gray: #f4f7f9; }
     body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: var(--bg-gray); }
 
-    /* Header & Search */
     .header { background-color: var(--oracle-blue); color: white; padding: 30px 8%; display: flex; justify-content: space-between; align-items: center; }
     .oracle-logo { height: 28px; filter: brightness(0) invert(1); }
     .search-wrapper { position: relative; width: 320px; }
@@ -24,28 +23,25 @@
     .search-icon { position: absolute; left: 12px; top: 11px; color: #888; }
     #profile-btn { font-size: 24px; cursor: pointer; margin-left: 20px; }
 
-    /* Main Accordion */
     .main-content { max-width: 900px; margin: 30px auto; padding: 0 20px; }
     .dropdown-card { background: white; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; }
-    .dropdown-btn { width: 100%; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: none; background: none; font-size: 16px; font-weight: 500; }
+    .dropdown-btn { width: 100%; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: none; background: none; font-size: 16px; font-weight: 500; text-align: left; }
     .dropdown-body { display: none; padding: 0 20px 20px 50px; border-top: 1px solid #eee; }
     
-    .section-container { margin-top: 10px; }
-    .section-header { font-weight: bold; color: #555; margin: 10px 0 5px 0; cursor: pointer; display: flex; justify-content: space-between; }
-    .pdf-list { list-style: none; padding: 0; margin: 0; }
-    .pdf-list li { margin-bottom: 8px; }
-    .pdf-list a { color: #0056b3; text-decoration: none; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+    .section-container { margin-top: 10px; border-bottom: 1px solid #f9f9f9; }
+    .section-header { font-weight: bold; color: #555; padding: 12px 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .pdf-list { list-style: none; padding: 0; margin: 0; display: none; }
+    .pdf-list li { margin-bottom: 8px; padding-left: 15px; }
+    .pdf-list a { color: #0056b3; text-decoration: none; font-size: 14px; }
 
-    /* Admin UI */
     #admin-bar { position: fixed; bottom: 20px; left: 20px; display: none; }
-    .admin-btn { padding: 10px 15px; border-radius: 5px; border: none; background: #333; color: white; cursor: pointer; }
+    .admin-btn { padding: 10px 15px; border-radius: 5px; border: none; background: #333; color: white; cursor: pointer; font-size: 13px; }
 
-    /* Modals */
     .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
     .modal-content { background: white; padding: 25px; border-radius: 10px; width: 350px; position: relative; }
     .modal-close { position: absolute; top: 10px; right: 15px; font-size: 20px; cursor: pointer; border: none; background: none; }
     .form-input, .form-select { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-    .btn-submit { width: 100%; padding: 12px; background: var(--oracle-blue); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+    .btn-submit { width: 100%; padding: 12px; background: var(--oracle-blue); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -63,20 +59,31 @@
   </header>
 
   <main class="main-content" id="accordion-container">
-    <div id="Working Instructions" class="dropdown-card">
-      <button class="dropdown-btn"><span><i class="fas fa-info-circle"></i> Working Instructions</span><span>▼</span></button>
+    <div class="dropdown-card">
+      <button class="dropdown-btn" data-target="body-Working-Instructions">
+        <span><i class="fas fa-info-circle"></i> Working Instructions</span><span>▼</span>
+      </button>
       <div class="dropdown-body" id="body-Working-Instructions"></div>
     </div>
-    <div id="Standard Operating Procedures" class="dropdown-card">
-      <button class="dropdown-btn"><span><i class="fas fa-clipboard-list"></i> Standard Operating Procedures</span><span>▼</span></button>
+    
+    <div class="dropdown-card">
+      <button class="dropdown-btn" data-target="body-Standard-Operating-Procedures">
+        <span><i class="fas fa-clipboard-list"></i> Standard Operating Procedures</span><span>▼</span>
+      </button>
       <div class="dropdown-body" id="body-Standard-Operating-Procedures"></div>
     </div>
-    <div id="Functional Specifications" class="dropdown-card">
-      <button class="dropdown-btn"><span><i class="fas fa-project-diagram"></i> Functional Specifications</span><span>▼</span></button>
+
+    <div class="dropdown-card">
+      <button class="dropdown-btn" data-target="body-Functional-Specifications">
+        <span><i class="fas fa-project-diagram"></i> Functional Specifications</span><span>▼</span>
+      </button>
       <div class="dropdown-body" id="body-Functional-Specifications"></div>
     </div>
-    <div id="Templates" class="dropdown-card">
-      <button class="dropdown-btn"><span><i class="fas fa-file-invoice"></i> Templates</span><span>▼</span></button>
+
+    <div class="dropdown-card">
+      <button class="dropdown-btn" data-target="body-Templates">
+        <span><i class="fas fa-file-invoice"></i> Templates</span><span>▼</span>
+      </button>
       <div class="dropdown-body" id="body-Templates"></div>
     </div>
   </main>
@@ -110,7 +117,7 @@
       </select>
       <input type="text" id="up-section" class="form-input" placeholder="Section Name (e.g. Receivables)">
       <input type="file" id="up-file" class="form-input">
-      <button id="up-submit" class="btn-submit">Upload to Cloud</button>
+      <button id="up-submit" class="btn-submit">Upload & Save</button>
     </div>
   </div>
 
@@ -136,11 +143,10 @@
     const db = firebase.database();
     const storage = firebase.storage();
 
-    // UI Logic
     function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
     document.getElementById('profile-btn').onclick = () => document.getElementById('auth-modal').style.display='flex';
 
-    // Auth Actions
+    // Auth & Toolbar
     document.getElementById('login-action').onclick = () => {
       auth.signInWithEmailAndPassword(document.getElementById('email').value, document.getElementById('password').value)
         .then(() => closeModals()).catch(e => alert(e.message));
@@ -154,14 +160,14 @@
       if(user) document.getElementById('user-email').innerText = user.email;
     });
 
-    // Upload Action
+    // Upload Data
     document.getElementById('up-submit').onclick = function() {
       const file = document.getElementById('up-file').files[0];
       const cat = document.getElementById('up-category').value;
       const sec = document.getElementById('up-section').value;
       if(!file || !sec) return alert("Fill all fields");
 
-      const ref = storage.ref('docs/' + file.name);
+      const ref = storage.ref('docs/' + Date.now() + "_" + file.name);
       ref.put(file).then(snap => snap.ref.getDownloadURL()).then(url => {
         db.ref('files').push({ category: cat, section: sec, name: file.name, url: url });
         alert("Success!");
@@ -169,9 +175,8 @@
       });
     };
 
-    // Load & Render Files from Database
+    // LOAD DATA & BUILD UI
     db.ref('files').on('value', snapshot => {
-      // Clear current lists
       document.querySelectorAll('.dropdown-body').forEach(b => b.innerHTML = '');
       
       snapshot.forEach(child => {
@@ -179,30 +184,39 @@
         const safeId = data.category.replace(/\s+/g, '-');
         const container = document.getElementById('body-' + safeId);
         
-        let secDiv = container.querySelector(`[data-sec="${data.section}"]`);
-        if(!secDiv) {
-          secDiv = document.createElement('div');
-          secDiv.className = 'section-container';
-          secDiv.setAttribute('data-sec', data.section);
-          secDiv.innerHTML = `<div class="section-header">${data.section} <span>▼</span></div><ul class="pdf-list"></ul>`;
-          container.appendChild(secDiv);
+        if (container) {
+            let secDiv = container.querySelector(`[data-sec="${data.section}"]`);
+            if(!secDiv) {
+              secDiv = document.createElement('div');
+              secDiv.className = 'section-container';
+              secDiv.setAttribute('data-sec', data.section);
+              secDiv.innerHTML = `<div class="section-header">${data.section} <i class="fas fa-chevron-down" style="font-size:0.7em"></i></div><ul class="pdf-list"></ul>`;
+              container.appendChild(secDiv);
+            }
+            const li = document.createElement('li');
+            li.innerHTML = `<a href="${data.url}" target="_blank"><i class="far fa-file-pdf"></i> ${data.name}</a>`;
+            secDiv.querySelector('ul').appendChild(li);
         }
-        const li = document.createElement('li');
-        li.innerHTML = `<a href="${data.url}" target="_blank"><i class="far fa-file-pdf"></i> ${data.name}</a>`;
-        secDiv.querySelector('ul').appendChild(li);
       });
-      setupAccordions();
     });
 
-    function setupAccordions() {
-      document.querySelectorAll('.dropdown-btn, .section-header').forEach(btn => {
-        btn.onclick = function(e) {
-          e.stopImmediatePropagation();
-          const panel = this.nextElementSibling;
-          panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-        };
-      });
-    }
+    // 100% FIXED CLICK LISTENER (Event Delegation)
+    document.getElementById('accordion-container').addEventListener('click', function(e) {
+      const dropBtn = e.target.closest('.dropdown-btn');
+      if (dropBtn) {
+        const panel = dropBtn.nextElementSibling;
+        const isOpen = panel.style.display === 'block';
+        panel.style.display = isOpen ? 'none' : 'block';
+        dropBtn.querySelector('span:last-child').innerText = isOpen ? '▼' : '▲';
+        return;
+      }
+
+      const secHeader = e.target.closest('.section-header');
+      if (secHeader) {
+        const list = secHeader.nextElementSibling;
+        list.style.display = (list.style.display === 'block') ? 'none' : 'block';
+      }
+    });
   </script>
 </body>
 </html>
