@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Helpdesk System</title>
+  <title>Helpdesk System - Oracle Pharmacy</title>
 
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
@@ -13,16 +13,15 @@
 
   <style>
     :root { --oracle-blue: #234e70; --bg-gray: #f4f7f9; }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: var(--bg-gray); color: #333; }
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: var(--bg-gray); color: #333; }
 
-    /* Header */
-    .header { background-color: var(--oracle-blue); color: white; padding: 35px 8%; display: flex; justify-content: space-between; align-items: center; position: relative; }
-    .oracle-image { height: 28px; filter: brightness(0) invert(1); }
+    /* Header & Search */
+    .header { background-color: var(--oracle-blue); color: white; padding: 35px 8%; display: flex; justify-content: space-between; align-items: center; }
+    .oracle-logo { height: 28px; filter: brightness(0) invert(1); }
     .search-wrapper { position: relative; width: 320px; }
-    .search-input { width: 100%; padding: 10px 15px 10px 40px; border-radius: 6px; border: none; outline: none; font-size: 14px; }
+    .search-input { width: 100%; padding: 10px 15px 10px 40px; border-radius: 6px; border: none; outline: none; }
     .search-icon { position: absolute; left: 12px; top: 12px; color: #888; }
-    #profile-icon { font-size: 24px; cursor: pointer; margin-left: 20px; transition: color 0.3s; }
-    #profile-icon:hover { color: #ccc; }
+    #profile-login-trigger { font-size: 24px; cursor: pointer; margin-left: 20px; }
 
     /* Main Content */
     .main-content { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
@@ -31,39 +30,40 @@
     .card-title { display: flex; align-items: center; gap: 15px; font-weight: 500; font-size: 16px; }
     
     .dropdown-body { display: none; padding: 0 20px 20px 55px; border-top: 1px solid #f0f0f0; }
-    .subtopic-btn { padding: 12px 0; cursor: pointer; display: flex; justify-content: space-between; font-weight: 500; color: #444; border-bottom: 1px solid #f9f9f9; }
+    .subtopic-btn { padding: 12px 0; cursor: pointer; display: flex; justify-content: space-between; font-weight: 500; color: #444; }
     .subtopic-body { display: none; padding-left: 15px; }
     .pdf-list { list-style: none; padding: 0; margin: 10px 0; }
     .pdf-list a { color: #0056b3; text-decoration: none; font-size: 14px; display: block; margin-bottom: 8px; }
 
-    /* Hidden Admin UI - Only shows after login */
-    #admin-controls { position: fixed; bottom: 20px; left: 20px; display: none; gap: 10px; }
+    /* Admin UI - HIDDEN BY DEFAULT */
+    #admin-toolbar { position: fixed; bottom: 20px; left: 20px; display: none; gap: 10px; z-index: 999; }
     .admin-btn { padding: 10px 15px; border-radius: 5px; border: none; background: #333; color: white; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 5px; }
 
-    /* Login Modal Styles */
+    /* Modals */
     .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
     .modal-content { background: white; padding: 30px; border-radius: 12px; width: 350px; position: relative; text-align: center; }
     .modal-close { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; border: none; background: none; }
     .form-input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-    .login-submit { width: 100%; padding: 12px; background: var(--oracle-blue); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+    .btn-primary { width: 100%; padding: 12px; background: var(--oracle-blue); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
   </style>
 </head>
 <body>
 
   <header class="header">
     <div style="display: flex; align-items: center; gap: 20px;">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/5/50/Oracle_logo.svg" class="oracle-image" alt="Oracle">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/5/50/Oracle_logo.svg" class="oracle-logo">
       <h2 style="font-weight: 400; margin: 0; font-size: 22px;">How can we help you today?</h2>
     </div>
     <div class="search-wrapper">
       <i class="fas fa-search search-icon"></i>
       <input type="text" id="searchInput" class="search-input" placeholder="Search...">
     </div>
-    <i id="profile-icon" class="fas fa-user-circle" title="Admin Login"></i>
+    <i id="profile-login-trigger" class="fas fa-user-circle"></i>
   </header>
 
   <main class="main-content">
     <div id="dynamic-accordion">
+      
       <div class="dropdown-card">
         <div class="dropdown-btn">
           <div class="card-title"><i class="fas fa-info-circle"></i><span>Working Instructions</span></div>
@@ -90,6 +90,31 @@
            </ul>
         </div>
       </div>
+
+      <div class="dropdown-card">
+        <div class="dropdown-btn">
+          <div class="card-title"><i class="fas fa-project-diagram"></i><span>Functional Specifications</span></div>
+          <span>▼</span>
+        </div>
+        <div class="dropdown-body">
+           <ul class="pdf-list">
+             <li><a href="https://res.cloudinary.com/dkwkdsnk7/raw/upload/v1748950949/MD050_Collection_Receipt_Form_1748950976602.pdf" target="_blank">MD050 Collection Receipt Form</a></li>
+           </ul>
+        </div>
+      </div>
+
+      <div class="dropdown-card">
+        <div class="dropdown-btn">
+          <div class="card-title"><i class="fas fa-file-invoice"></i><span>Templates</span></div>
+          <span>▼</span>
+        </div>
+        <div class="dropdown-body">
+           <ul class="pdf-list">
+             <li><a href="https://res.cloudinary.com/dkwkdsnk7/raw/upload/v1747790838/ROSE_Cash_Advance_Liquidation_Form_V6-082023_1747790785821.xlsx" target="_blank">Cash Advance Liquidation Form</a></li>
+           </ul>
+        </div>
+      </div>
+
     </div>
   </main>
 
@@ -97,15 +122,15 @@
     <div class="modal-content">
       <button class="modal-close" id="close-modal">×</button>
       <h2 style="color: var(--oracle-blue);">Admin Login</h2>
-      <input type="email" id="login-email" class="form-input" placeholder="Email">
-      <input type="password" id="login-pass" class="form-input" placeholder="Password">
-      <button id="do-login" class="login-submit">Sign In</button>
-      <div id="login-error" style="color: red; font-size: 12px; margin-top: 10px;"></div>
+      <input type="email" id="email" class="form-input" placeholder="Email">
+      <input type="password" id="password" class="form-input" placeholder="Password">
+      <button id="login-btn" class="btn-primary">Login</button>
+      <p id="error-msg" style="color:red; font-size:12px; margin-top:10px;"></p>
     </div>
   </div>
 
-  <div id="admin-controls">
-    <button class="admin-btn" id="add-section-btn"><i class="fas fa-plus"></i> Add Section</button>
+  <div id="admin-toolbar">
+    <button class="admin-btn" id="add-sec-btn"><i class="fas fa-plus"></i> Add Section</button>
     <button class="admin-btn" onclick="firebase.auth().signOut()"><i class="fas fa-sign-out-alt"></i> Logout</button>
   </div>
 
@@ -122,7 +147,7 @@
     };
     firebase.initializeApp(firebaseConfig);
 
-    // Accordion Logic
+    // Accordion Control
     document.querySelectorAll('.dropdown-btn, .subtopic-btn').forEach(btn => {
       btn.addEventListener('click', function(e) {
         e.stopPropagation();
@@ -131,38 +156,32 @@
       });
     });
 
-    // Login Modal Logic
+    // Modal Control
     const modal = document.getElementById('login-modal');
-    document.getElementById('profile-icon').onclick = () => modal.style.display = 'flex';
+    document.getElementById('profile-login-trigger').onclick = () => modal.style.display = 'flex';
     document.getElementById('close-modal').onclick = () => modal.style.display = 'none';
 
-    // Firebase Auth Login
-    document.getElementById('do-login').onclick = () => {
-      const email = document.getElementById('login-email').value;
-      const pass = document.getElementById('login-pass').value;
+    // Firebase Authentication Login
+    document.getElementById('login-btn').onclick = () => {
+      const email = document.getElementById('email').value;
+      const pass = document.getElementById('password').value;
       firebase.auth().signInWithEmailAndPassword(email, pass)
-        .then(() => {
-          modal.style.display = 'none';
-          alert("Logged in successfully!");
-        })
-        .catch(err => {
-          document.getElementById('login-error').innerText = err.message;
-        });
+        .then(() => { modal.style.display = 'none'; })
+        .catch(err => { document.getElementById('error-msg').innerText = "Login Failed: " + err.message; });
     };
 
-    // Watch Auth State (Show/Hide Admin Buttons)
+    // Watch login state: Show/Hide admin buttons automatically
     firebase.auth().onAuthStateChanged(user => {
-      const adminDiv = document.getElementById('admin-controls');
-      adminDiv.style.display = user ? 'flex' : 'none';
+      document.getElementById('admin-toolbar').style.display = user ? 'flex' : 'none';
     });
 
     // Search Filtering
-    document.getElementById('searchInput').onkeyup = function() {
+    document.getElementById('searchInput').addEventListener('keyup', function() {
       let filter = this.value.toLowerCase();
       document.querySelectorAll('.dropdown-card').forEach(card => {
         card.style.display = card.innerText.toLowerCase().includes(filter) ? "" : "none";
       });
-    };
+    });
   </script>
 </body>
 </html>
