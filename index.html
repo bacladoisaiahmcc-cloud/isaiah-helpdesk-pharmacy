@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Helpdesk System - Oracle Pharmacy</title>
+  <title>Oracle Pharmacy | Helpdesk Portal</title>
 
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
@@ -13,142 +13,165 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
   <style>
-    :root { --oracle-blue: #234e70; --bg-gray: #f4f7f9; }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: var(--bg-gray); }
+    :root { --oracle-red: #f80000; --oracle-blue: #234e70; --bg: #f4f7f9; --text: #333; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; margin: 0; background-color: var(--bg); color: var(--text); }
 
-    /* Header */
-    .header { background-color: var(--oracle-blue); color: white; padding: 25px 8%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .oracle-logo { height: 24px; filter: brightness(0) invert(1); }
-    .search-wrapper { position: relative; width: 350px; }
-    .search-input { width: 100%; padding: 12px 15px 12px 40px; border-radius: 8px; border: none; outline: none; font-size: 14px; }
-    .search-icon { position: absolute; left: 12px; top: 14px; color: #888; }
-    #profile-btn { font-size: 28px; cursor: pointer; transition: opacity 0.2s; }
-    #profile-btn:hover { opacity: 0.8; }
+    /* Header Styling */
+    .header { background-color: var(--oracle-blue); color: white; padding: 40px 8%; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--oracle-red); }
+    .header-left { display: flex; flex-direction: column; gap: 5px; }
+    .oracle-logo { height: 22px; filter: brightness(0) invert(1); margin-bottom: 5px; }
+    .welcome-text { font-size: 26px; font-weight: 300; margin: 0; opacity: 0.95; }
+
+    .header-right { display: flex; align-items: center; gap: 20px; }
+    .search-box { position: relative; width: 300px; }
+    .search-box input { width: 100%; padding: 12px 15px 12px 40px; border-radius: 6px; border: none; outline: none; font-size: 14px; }
+    .search-box i { position: absolute; left: 12px; top: 14px; color: #888; }
+    #user-trigger { font-size: 30px; cursor: pointer; transition: transform 0.2s; }
+    #user-trigger:hover { transform: scale(1.1); color: #f0f0f0; }
 
     /* Main Content */
-    .main-content { max-width: 900px; margin: 40px auto; padding: 0 20px; }
-    .dropdown-card { background: white; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #eaeaea; }
-    .dropdown-btn { width: 100%; padding: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: none; background: none; font-size: 16px; font-weight: 600; color: #234e70; text-align: left; }
-    .dropdown-body { display: none; padding: 0 20px 20px 55px; border-top: 1px solid #f5f5f5; background-color: #fcfcfc; }
-    
-    /* Sub-sections */
-    .section-container { margin-top: 10px; }
-    .section-header { font-weight: bold; color: #444; padding: 12px 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
-    .pdf-list { list-style: none; padding: 10px 0 10px 15px; margin: 0; display: none; }
-    .pdf-list li { margin-bottom: 10px; }
-    .pdf-list a { color: #0056b3; text-decoration: none; font-size: 14px; display: flex; align-items: center; gap: 10px; }
-    .pdf-list a:hover { text-decoration: underline; }
+    .container { max-width: 900px; margin: 40px auto; padding: 0 20px; min-height: 60vh; }
+    .card { background: white; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #e1e4e8; overflow: hidden; }
+    .card-header { width: 100%; padding: 22px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: none; background: none; font-size: 17px; font-weight: 600; color: var(--oracle-blue); text-align: left; transition: background 0.2s; }
+    .card-header:hover { background: #fcfcfc; }
+    .card-body { display: none; padding: 0 20px 20px 55px; background: #fafafa; border-top: 1px solid #eee; }
 
-    /* Admin UI */
-    #admin-bar { position: fixed; bottom: 30px; left: 30px; display: none; z-index: 99; }
-    .admin-btn { padding: 12px 20px; border-radius: 30px; border: none; background: #333; color: white; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 8px; }
+    /* Sub-Sections (Subjects) */
+    .subject-group { margin-top: 10px; border-bottom: 1px solid #f0f0f0; }
+    .subject-header { font-weight: bold; color: #555; padding: 14px 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .file-list { list-style: none; padding: 10px 0 15px 20px; margin: 0; display: none; }
+    .file-list li { margin-bottom: 10px; }
+    .file-list a { color: #0056b3; text-decoration: none; font-size: 14px; display: flex; align-items: center; gap: 10px; font-weight: 500; }
+    .file-list a:hover { text-decoration: underline; color: var(--oracle-red); }
+
+    /* Admin Floating Toolbar */
+    #admin-bar { position: fixed; bottom: 30px; left: 30px; display: none; z-index: 999; }
+    .btn-admin { padding: 14px 26px; border-radius: 50px; border: none; background: #222; color: white; cursor: pointer; font-weight: bold; box-shadow: 0 4px 20px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; }
+    .btn-admin:hover { background: #000; }
 
     /* Modals */
-    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000; }
-    .modal-content { background: white; padding: 30px; border-radius: 15px; width: 380px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-    .modal-close { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; border: none; background: none; color: #999; }
-    .form-input, .form-select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
-    .btn-submit { width: 100%; padding: 14px; background: var(--oracle-blue); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; margin-top: 15px; }
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.65); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; backdrop-filter: blur(3px); }
+    .modal-content { background: white; padding: 35px; border-radius: 15px; width: 100%; max-width: 420px; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.25); }
+    .modal-close { position: absolute; top: 18px; right: 22px; font-size: 26px; cursor: pointer; border: none; background: none; color: #bbb; }
+    .modal-close:hover { color: #333; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 6px; color: #555; }
+    .form-control { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+    .btn-block { width: 100%; padding: 15px; background: var(--oracle-blue); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; transition: background 0.2s; }
+    .btn-block:hover { background: #1a3a54; }
+
+    #up-progress { text-align: center; font-size: 13px; margin-top: 15px; color: var(--oracle-blue); font-weight: 500; }
   </style>
 </head>
 <body>
 
   <header class="header">
-    <div style="display:flex; align-items:center; gap:20px;">
+    <div class="header-left">
       <img src="https://upload.wikimedia.org/wikipedia/commons/5/50/Oracle_logo.svg" class="oracle-logo">
-      <h2 style="font-weight:400; margin:0; font-size: 20px; letter-spacing: 0.5px;">Helpdesk Portal</h2>
+      <h1 class="welcome-text">How can we help you today?</h1>
     </div>
-    <div class="search-wrapper">
-      <i class="fas fa-search search-icon"></i>
-      <input type="text" id="searchInput" class="search-input" placeholder="Search for documents...">
+    <div class="header-right">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Search guides, SOPs, and files...">
+      </div>
+      <i id="user-trigger" class="fas fa-user-circle"></i>
     </div>
-    <i id="profile-btn" class="fas fa-user-circle"></i>
   </header>
 
-  <main class="main-content" id="accordion-container">
-    <div class="dropdown-card">
-      <button class="dropdown-btn">
-        <span><i class="fas fa-info-circle" style="margin-right:10px;"></i> Working Instructions</span>
-        <span class="arrow">▼</span>
+  <main class="container" id="main-accordion">
+    <div class="card">
+      <button class="card-header">
+        <span><i class="fas fa-info-circle" style="margin-right:12px"></i> Working Instructions</span>
+        <i class="fas fa-chevron-down arrow"></i>
       </button>
-      <div class="dropdown-body" id="body-Working-Instructions"></div>
-    </div>
-    
-    <div class="dropdown-card">
-      <button class="dropdown-btn">
-        <span><i class="fas fa-clipboard-list" style="margin-right:10px;"></i> Standard Operating Procedures</span>
-        <span class="arrow">▼</span>
-      </button>
-      <div class="dropdown-body" id="body-Standard-Operating-Procedures"></div>
+      <div class="card-body" id="body-Working-Instructions"></div>
     </div>
 
-    <div class="dropdown-card">
-      <button class="dropdown-btn">
-        <span><i class="fas fa-project-diagram" style="margin-right:10px;"></i> Functional Specifications</span>
-        <span class="arrow">▼</span>
+    <div class="card">
+      <button class="card-header">
+        <span><i class="fas fa-clipboard-list" style="margin-right:12px"></i> Standard Operating Procedures</span>
+        <i class="fas fa-chevron-down arrow"></i>
       </button>
-      <div class="dropdown-body" id="body-Functional-Specifications"></div>
+      <div class="card-body" id="body-Standard-Operating-Procedures"></div>
     </div>
 
-    <div class="dropdown-card">
-      <button class="dropdown-btn">
-        <span><i class="fas fa-file-invoice" style="margin-right:10px;"></i> Templates</span>
-        <span class="arrow">▼</span>
+    <div class="card">
+      <button class="card-header">
+        <span><i class="fas fa-project-diagram" style="margin-right:12px"></i> Functional Specifications</span>
+        <i class="fas fa-chevron-down arrow"></i>
       </button>
-      <div class="dropdown-body" id="body-Templates"></div>
+      <div class="card-body" id="body-Functional-Specifications"></div>
+    </div>
+
+    <div class="card">
+      <button class="card-header">
+        <span><i class="fas fa-file-invoice" style="margin-right:12px"></i> Templates</span>
+        <i class="fas fa-chevron-down arrow"></i>
+      </button>
+      <div class="card-body" id="body-Templates"></div>
     </div>
   </main>
 
-  <div id="auth-modal" class="modal">
+  <div id="user-modal" class="modal">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeModals()">×</button>
-      <div id="login-form">
-        <h2 style="text-align:center; color: var(--oracle-blue);">Admin Login</h2>
-        <input type="email" id="email" class="form-input" placeholder="Email Address">
-        <input type="password" id="password" class="form-input" placeholder="Password">
-        <button id="login-action" class="btn-submit">Sign In</button>
-        <p id="auth-error" style="color:red; font-size:12px; text-align:center; margin-top:10px;"></p>
+      <button class="modal-close">×</button>
+      <div id="login-view">
+        <h2 style="text-align:center; color: var(--oracle-blue); margin-bottom: 25px;">Admin Login</h2>
+        <div class="form-group"><input type="email" id="email" class="form-control" placeholder="Email Address"></div>
+        <div class="form-group"><input type="password" id="password" class="form-control" placeholder="Password"></div>
+        <button id="login-btn" class="btn-block">Sign In</button>
+        <p id="login-err" style="color:red; font-size:12px; text-align:center; margin-top:15px;"></p>
       </div>
-      <div id="user-panel" style="display:none; text-align:center">
-        <h2 style="color: var(--oracle-blue);">Admin Dashboard</h2>
-        <p id="user-email" style="background: #f0f0f0; padding: 10px; border-radius: 5px; font-size: 14px;"></p>
-        <button id="logout-action" class="btn-submit" style="background:#d9534f">Sign Out</button>
+      <div id="account-view" style="display:none; text-align:center;">
+        <h2 style="color: var(--oracle-blue); margin-bottom: 20px;">Admin Account</h2>
+        <div style="background:#f8f9fa; padding:20px; border-radius:10px; margin-bottom:20px;">
+          <i class="fas fa-user-shield" style="font-size:40px; color:#ccc; margin-bottom:10px;"></i>
+          <p id="active-user-email" style="font-size:14px; font-weight:bold; color:#555; margin:0;"></p>
+        </div>
+        <button id="logout-btn" class="btn-block" style="background:#d9534f">Sign Out</button>
       </div>
     </div>
   </div>
 
   <div id="upload-modal" class="modal">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeModals()">×</button>
-      <h2 style="color: var(--oracle-blue);">Upload Document</h2>
+      <button class="modal-close">×</button>
+      <h2 style="color: var(--oracle-blue); margin-bottom:25px;">Add New Document</h2>
       
-      <label style="font-size:12px; font-weight:bold;">Category</label>
-      <select id="up-category" class="form-select">
-        <option>Working Instructions</option>
-        <option>Standard Operating Procedures</option>
-        <option>Functional Specifications</option>
-        <option>Templates</option>
-      </select>
+      <div class="form-group">
+        <label>Main Category</label>
+        <select id="up-cat" class="form-control">
+          <option>Working Instructions</option>
+          <option>Standard Operating Procedures</option>
+          <option>Functional Specifications</option>
+          <option>Templates</option>
+        </select>
+      </div>
 
-      <label style="font-size:12px; font-weight:bold;">Section (e.g. Receivables, Finance)</label>
-      <input type="text" id="up-section" class="form-input" placeholder="Enter section name...">
+      <div class="form-group">
+        <label>Subject / Section (e.g. Receivables)</label>
+        <input type="text" id="up-sec" class="form-control" placeholder="Enter subject name">
+      </div>
 
-      <label style="font-size:12px; font-weight:bold;">File</label>
-      <input type="file" id="up-file" class="form-input">
-      
-      <button id="up-submit" class="btn-submit">Start Upload</button>
-      <div id="up-status" style="font-size:12px; text-align:center; margin-top:10px; color: #666;"></div>
+      <div class="form-group">
+        <label>Select Document (PDF/XLSX)</label>
+        <input type="file" id="up-file" class="form-control">
+      </div>
+
+      <button id="upload-action-btn" class="btn-block">Upload to Cloud</button>
+      <p id="up-progress"></p>
     </div>
   </div>
 
   <div id="admin-bar">
-    <button class="admin-btn" onclick="document.getElementById('upload-modal').style.display='flex'">
-      <i class="fas fa-plus"></i> Add New File
+    <button class="btn-admin" onclick="document.getElementById('upload-modal').style.display='flex'">
+      <i class="fas fa-cloud-upload-alt"></i> Add New File
     </button>
   </div>
 
   <script>
-    // 1. Firebase Init
+    // 1. Firebase Initialization
     const firebaseConfig = {
       apiKey: "AIzaSyBaSuFhNUeghfXEznYCHxYnagkjiojfO_M",
       authDomain: "helpdeskrpharmacy.firebaseapp.com",
@@ -164,115 +187,127 @@
     const db = firebase.database();
     const storage = firebase.storage();
 
-    // 2. Modal Controls
-    function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
-    document.getElementById('profile-btn').onclick = () => document.getElementById('auth-modal').style.display='flex';
+    // 2. Navigation & Modal Logic
+    const closeAllModals = () => document.querySelectorAll('.modal').forEach(m => m.style.display='none');
+    document.querySelectorAll('.modal-close').forEach(btn => btn.onclick = closeAllModals);
+    document.getElementById('user-trigger').onclick = () => document.getElementById('user-modal').style.display='flex';
 
-    // 3. Auth Logic
-    document.getElementById('login-action').onclick = () => {
+    // 3. Authentication & State Management
+    document.getElementById('login-btn').onclick = () => {
       const email = document.getElementById('email').value;
       const pass = document.getElementById('password').value;
       auth.signInWithEmailAndPassword(email, pass)
-        .then(() => { closeModals(); document.getElementById('auth-error').innerText = ""; })
-        .catch(e => document.getElementById('auth-error').innerText = e.message);
+        .then(() => { closeAllModals(); document.getElementById('login-err').innerText = ""; })
+        .catch(e => document.getElementById('login-err').innerText = "Login Error: " + e.message);
     };
-    document.getElementById('logout-action').onclick = () => auth.signOut();
+
+    document.getElementById('logout-btn').onclick = () => auth.signOut().then(() => closeAllModals());
 
     auth.onAuthStateChanged(user => {
-      document.getElementById('admin-bar').style.display = user ? 'block' : 'none';
-      document.getElementById('login-form').style.display = user ? 'none' : 'block';
-      document.getElementById('user-panel').style.display = user ? 'block' : 'none';
-      if(user) document.getElementById('user-email').innerText = "Logged in as: " + user.email;
+      const isLogged = !!user;
+      document.getElementById('admin-bar').style.display = isLogged ? 'block' : 'none';
+      document.getElementById('login-view').style.display = isLogged ? 'none' : 'block';
+      document.getElementById('account-view').style.display = isLogged ? 'block' : 'none';
+      if(user) document.getElementById('active-user-email').innerText = user.email;
     });
 
-    // 4. Upload Logic
-    document.getElementById('up-submit').onclick = function() {
-      const file = document.getElementById('up-file').files[0];
-      const cat = document.getElementById('up-category').value;
-      const sec = document.getElementById('up-section').value;
-      const status = document.getElementById('up-status');
+    // 4. File Upload (Admin Only)
+    document.getElementById('upload-action-btn').onclick = function() {
+      const fileInput = document.getElementById('up-file');
+      const file = fileInput.files[0];
+      const category = document.getElementById('up-cat').value;
+      const subject = document.getElementById('up-sec').value;
+      const progressTxt = document.getElementById('up-progress');
 
-      if(!file || !sec) return alert("Please fill all fields");
+      if(!file || !subject) return alert("Please fill in all fields and select a file.");
 
-      status.innerText = "Uploading... please wait.";
-      const ref = storage.ref('docs/' + Date.now() + "_" + file.name);
+      progressTxt.innerText = "Processing upload...";
+      const storageRef = storage.ref('helpdesk_docs/' + Date.now() + "_" + file.name);
       
-      ref.put(file).then(snap => snap.ref.getDownloadURL()).then(url => {
-        db.ref('files').push({
-          category: cat,
-          section: sec,
-          name: file.name,
-          url: url
+      storageRef.put(file).then(snapshot => snapshot.ref.getDownloadURL()).then(downloadURL => {
+        db.ref('portal_files').push({
+          category: category,
+          subject: subject,
+          fileName: file.name,
+          fileLink: downloadURL
         });
-        status.innerText = "Upload Complete!";
-        setTimeout(() => { closeModals(); status.innerText = ""; }, 1500);
-      }).catch(err => { alert(err.message); status.innerText = ""; });
+        progressTxt.innerText = "Upload successful!";
+        fileInput.value = "";
+        document.getElementById('up-sec').value = "";
+        setTimeout(() => { closeAllModals(); progressTxt.innerText = ""; }, 1200);
+      }).catch(err => {
+        alert("Upload failed: " + err.message);
+        progressTxt.innerText = "";
+      });
     };
 
-    // 5. THE FIX: Load Data & Build UI
-    db.ref('files').on('value', snapshot => {
-      // Clear existing content
-      document.querySelectorAll('.dropdown-body').forEach(b => b.innerHTML = '');
+    // 5. Dynamic Content Rendering (Real-time)
+    db.ref('portal_files').on('value', snapshot => {
+      // Clear existing containers
+      document.querySelectorAll('.card-body').forEach(body => body.innerHTML = '');
       
       snapshot.forEach(child => {
-        const data = child.val();
-        const safeId = data.category.replace(/\s+/g, '-');
-        const container = document.getElementById('body-' + safeId);
+        const fileData = child.val();
+        const categoryId = 'body-' + fileData.category.replace(/\s+/g, '-');
+        const parentContainer = document.getElementById(categoryId);
         
-        if (container) {
-            let secDiv = container.querySelector(`[data-sec="${data.section}"]`);
-            if(!secDiv) {
-              secDiv = document.createElement('div');
-              secDiv.className = 'section-container';
-              secDiv.setAttribute('data-sec', data.section);
-              secDiv.innerHTML = `
-                <div class="section-header">
-                  ${data.section} <i class="fas fa-chevron-down" style="font-size:0.7em"></i>
-                </div>
-                <ul class="pdf-list"></ul>`;
-              container.appendChild(secDiv);
-            }
-            const li = document.createElement('li');
-            li.innerHTML = `<a href="${data.url}" target="_blank"><i class="far fa-file-pdf" style="color:#d9534f"></i> ${data.name}</a>`;
-            secDiv.querySelector('ul').appendChild(li);
+        if (parentContainer) {
+          // Find or create the Subject/Section group
+          let groupDiv = parentContainer.querySelector(`[data-subject="${fileData.subject}"]`);
+          if(!groupDiv) {
+            groupDiv = document.createElement('div');
+            groupDiv.className = 'subject-group';
+            groupDiv.setAttribute('data-subject', fileData.subject);
+            groupDiv.innerHTML = `
+              <div class="subject-header">
+                ${fileData.subject} <i class="fas fa-chevron-down" style="font-size:0.7em; color:#999;"></i>
+              </div>
+              <ul class="file-list"></ul>`;
+            parentContainer.appendChild(groupDiv);
+          }
+          // Add the file to the subject list
+          const li = document.createElement('li');
+          li.innerHTML = `<a href="${fileData.fileLink}" target="_blank">
+                            <i class="far fa-file-pdf" style="color:#d9534f"></i> ${fileData.fileName}
+                          </a>`;
+          groupDiv.querySelector('ul').appendChild(li);
         }
       });
     });
 
-    // 6. THE FIX: Global Click Handler (Event Delegation)
-    document.getElementById('accordion-container').addEventListener('click', function(e) {
-      // Handle Main Categories
-      const dropBtn = e.target.closest('.dropdown-btn');
-      if (dropBtn) {
-        const body = dropBtn.nextElementSibling;
-        const arrow = dropBtn.querySelector('.arrow');
-        const isVisible = body.style.display === 'block';
+    // 6. THE FIX: Universal Click Handler (Event Delegation)
+    document.getElementById('main-accordion').addEventListener('click', (event) => {
+      // Click on Main Category Card
+      const headerClick = event.target.closest('.card-header');
+      if (headerClick) {
+        const body = headerClick.nextElementSibling;
+        const arrow = headerClick.querySelector('.arrow');
+        const isOpen = body.style.display === 'block';
         
-        body.style.display = isVisible ? 'none' : 'block';
-        arrow.innerText = isVisible ? '▼' : '▲';
+        body.style.display = isOpen ? 'none' : 'block';
+        arrow.className = isOpen ? 'fas fa-chevron-down arrow' : 'fas fa-chevron-up arrow';
         return;
       }
 
-      // Handle Sub-Sections
-      const secHeader = e.target.closest('.section-header');
-      if (secHeader) {
-        const list = secHeader.nextElementSibling;
-        const icon = secHeader.querySelector('i');
-        const isVisible = list.style.display === 'block';
+      // Click on Subject/Section inside Category
+      const subjectClick = event.target.closest('.subject-header');
+      if (subjectClick) {
+        const list = subjectClick.nextElementSibling;
+        const chevron = subjectClick.querySelector('i');
+        const isOpen = list.style.display === 'block';
         
-        list.style.display = isVisible ? 'none' : 'block';
-        icon.className = isVisible ? 'fas fa-chevron-down' : 'fas fa-chevron-up';
+        list.style.display = isOpen ? 'none' : 'block';
+        chevron.className = isOpen ? 'fas fa-chevron-down' : 'fas fa-chevron-up';
       }
     });
 
-    // 7. Search Filter
-    document.getElementById('searchInput').addEventListener('keyup', function() {
-      let filter = this.value.toLowerCase();
-      document.querySelectorAll('.dropdown-card').forEach(card => {
-        let text = card.innerText.toLowerCase();
-        card.style.display = text.includes(filter) ? "block" : "none";
+    // 7. Search Feature
+    document.getElementById('searchInput').onkeyup = function() {
+      let query = this.value.toLowerCase();
+      document.querySelectorAll('.card').forEach(card => {
+        card.style.display = card.innerText.toLowerCase().includes(query) ? "block" : "none";
       });
-    });
+    };
   </script>
 </body>
 </html>
