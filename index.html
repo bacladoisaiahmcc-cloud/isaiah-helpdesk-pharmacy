@@ -1,294 +1,281 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Oracle Pharmacy Helpdesk</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oracle Pharmacy Helpdesk</title>
 
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-  
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
-  <style>
-    :root { 
-      --oracle-blue: #234e70; 
-      --oracle-red: #eb1000; 
-      --bg: #f4f7f9; 
-    }
-    body { 
-      font-family: 'Segoe UI', Tahoma, sans-serif; 
-      margin: 0; 
-      background-color: var(--bg); 
-      color: #333; 
-    }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    /* HEADER STYLES */
-    .header { 
-      background-color: var(--oracle-blue); 
-      color: white; 
-      padding: 12px 5%; 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      border-bottom: 4px solid var(--oracle-red);
-      position: sticky; top: 0; z-index: 1000;
-    }
-    .header-left { display: flex; align-items: center; gap: 15px; }
-    .oracle-logo { height: 25px; filter: brightness(0) invert(1); }
-    .header-title { font-size: 20px; font-weight: 400; margin: 0; border-left: 1px solid rgba(255,255,255,0.3); padding-left: 15px; }
+<style>
+:root { 
+  --oracle-blue: #2c5c7c; 
+  --oracle-red: #eb1000; 
+  --bg: #f5f6f8; 
+}
 
-    .header-right { flex-shrink: 0; }
-    .search-wrapper { position: relative; width: 250px; }
-    .search-wrapper input {
-      width: 100%;
-      padding: 8px 12px 8px 35px;
-      border-radius: 4px;
-      border: none;
-      font-size: 14px;
-      outline: none;
-    }
-    .search-icon {
-      position: absolute;
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #666;
-      font-size: 14px;
-    }
+body { 
+  font-family: 'Segoe UI', Tahoma, sans-serif; 
+  margin: 0; 
+  background-color: var(--bg); 
+}
 
-    /* ADMIN BUTTON */
-    #login-trigger {
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      background-color: var(--oracle-red);
-      color: white;
-      padding: 12px 20px;
-      border-radius: 50px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: bold;
-      font-size: 13px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-      z-index: 1500;
-      transition: 0.3s;
-      border: none;
-    }
+/* HEADER */
+.header { 
+  background-color: var(--oracle-blue); 
+  color: white; 
+  padding: 18px 5%; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+}
 
-    #login-trigger:hover {
-      background-color: #c00d00;
-      transform: scale(1.05);
-    }
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
 
-    /* ACCORDION CARDS */
-    .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; padding-bottom: 100px; }
-    .card { background: white; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
-    .card-header { 
-      width: 100%; padding: 20px 25px; display: flex; justify-content: space-between; 
-      align-items: center; cursor: pointer; border: none; background: white; 
-      font-size: 16px; font-weight: 500; color: #444; text-align: left;
-    }
-    .card-header:hover { background: #f9f9f9; }
-    .arrow { color: #888; font-size: 14px; transition: transform 0.3s; }
-    .card-body { display: none; padding: 15px 30px 25px 65px; border-top: 1px solid #eee; background: #fafafa; }
+.oracle-logo {
+  height: 22px;
+  filter: brightness(0) invert(1);
+}
 
-    /* MODALS */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 2000; }
-    .modal-box { background: white; padding: 30px; border-radius: 8px; width: 330px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-    .close-modal { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; border: none; background: none; color: #888; }
-    .input-field { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-    .btn-main { width: 100%; padding: 12px; background: var(--oracle-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+.header-title {
+  font-size: 20px;
+  font-weight: 400;
+}
 
-    /* ADMIN TOOLBAR */
-    #admin-toolbar { position: fixed; bottom: 90px; right: 30px; display: none; z-index: 1400; }
-    .btn-admin { background: #333; color: white; border: none; padding: 12px 20px; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; }
-  </style>
+/* SEARCH */
+.search-wrapper {
+  position: relative;
+  width: 260px;
+}
+
+.search-wrapper input {
+  width: 100%;
+  padding: 10px 12px 10px 35px;
+  border-radius: 6px;
+  border: none;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+}
+
+/* CONTAINER */
+.container { 
+  max-width: 950px; 
+  margin: 30px auto; 
+  padding: 0 15px;
+}
+
+/* CARDS */
+.card {
+  background: white;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+.card-header {
+  width: 100%;
+  padding: 18px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  border: none;
+  background: white;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.card-header:hover {
+  background: #f9fafb;
+}
+
+.card-header span {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.arrow {
+  transition: transform 0.3s;
+  color: #777;
+}
+
+.card-body {
+  display: none;
+  padding: 15px 25px;
+  background: #fafafa;
+  border-top: 1px solid #eee;
+}
+
+/* SUBJECT */
+.subject-section div {
+  font-weight: 600;
+  color: var(--oracle-blue);
+  padding: 10px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.subject-section ul {
+  list-style: none;
+  padding-left: 10px;
+}
+
+.subject-section li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #444;
+  font-size: 14px;
+}
+
+.subject-section li a:hover {
+  color: var(--oracle-blue);
+}
+
+/* ADMIN BUTTON */
+#login-trigger {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background: var(--oracle-red);
+  color: white;
+  padding: 12px 18px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+}
+
+/* MODALS */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-box {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  width: 320px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+}
+
+.btn-main {
+  width: 100%;
+  padding: 10px;
+  background: var(--oracle-blue);
+  color: white;
+  border: none;
+}
+
+#admin-toolbar {
+  position: fixed;
+  bottom: 80px;
+  right: 25px;
+  display: none;
+}
+</style>
 </head>
+
 <body>
 
 <header class="header">
   <div class="header-left">
     <img src="https://upload.wikimedia.org/wikipedia/commons/5/50/Oracle_logo.svg" class="oracle-logo">
-    <h1 class="header-title">Helpdesk</h1>
+    <h1 class="header-title">How can we help you today?</h1>
   </div>
-  <div class="header-right">
-    <div class="search-wrapper">
-      <i class="fas fa-search search-icon"></i>
-      <input type="text" id="searchBar" placeholder="Search instructions...">
-    </div>
+
+  <div class="search-wrapper">
+    <i class="fas fa-search search-icon"></i>
+    <input type="text" id="searchBar" placeholder="Search...">
   </div>
 </header>
 
 <button id="login-trigger">
-  <i class="fas fa-user-shield"></i>
-  <span>ADMIN LOGIN</span>
+  <i class="fas fa-user-shield"></i> ADMIN LOGIN
 </button>
 
 <main class="container" id="accordion-container">
-  <div class="card">
-    <button class="card-header"><span><i class="fas fa-info-circle"></i> Working Instructions</span> <i class="fas fa-caret-down arrow"></i></button>
-    <div class="card-body" id="body-Working-Instructions"></div>
-  </div>
-  <div class="card">
-    <button class="card-header"><span><i class="fas fa-clipboard-list"></i> Standard Operating Procedures</span> <i class="fas fa-caret-down arrow"></i></button>
-    <div class="card-body" id="body-Standard-Operating-Procedures"></div>
-  </div>
-  <div class="card">
-    <button class="card-header"><span><i class="fas fa-project-diagram"></i> Functional Specifications</span> <i class="fas fa-caret-down arrow"></i></button>
-    <div class="card-body" id="body-Functional-Specifications"></div>
-  </div>
-  <div class="card">
-    <button class="card-header"><span><i class="fas fa-file-invoice"></i> Templates</span> <i class="fas fa-caret-down arrow"></i></button>
-    <div class="card-body" id="body-Templates"></div>
-  </div>
+
+<div class="card">
+<button class="card-header">
+<span><i class="fas fa-book"></i> Working Instructions</span>
+<i class="fas fa-caret-down arrow"></i>
+</button>
+<div class="card-body" id="body-Working-Instructions"></div>
+</div>
+
+<div class="card">
+<button class="card-header">
+<span><i class="fas fa-file-alt"></i> Standard Operating Procedures</span>
+<i class="fas fa-caret-down arrow"></i>
+</button>
+<div class="card-body" id="body-Standard-Operating-Procedures"></div>
+</div>
+
+<div class="card">
+<button class="card-header">
+<span><i class="fas fa-layer-group"></i> Functional Specifications</span>
+<i class="fas fa-caret-down arrow"></i>
+</button>
+<div class="card-body" id="body-Functional-Specifications"></div>
+</div>
+
+<div class="card">
+<button class="card-header">
+<span><i class="fas fa-file"></i> Templates</span>
+<i class="fas fa-caret-down arrow"></i>
+</button>
+<div class="card-body" id="body-Templates"></div>
+</div>
+
 </main>
 
-<div id="loginModal" class="modal-overlay">
-  <div class="modal-box">
-    <button class="close-modal">&times;</button>
-    <div id="login-view">
-      <h3 style="margin-top:0; text-align:center;">Admin Portal</h3>
-      <input type="email" id="loginEmail" class="input-field" placeholder="Email Address">
-      <input type="password" id="loginPass" class="input-field" placeholder="Password">
-      <button id="doLogin" class="btn-main">Login Now</button>
-      <p id="loginError" style="color:red; font-size:12px; text-align:center; margin-top:10px;"></p>
-    </div>
-    <div id="profile-view" style="display:none; text-align:center;">
-      <p>Logged in as:</p>
-      <p id="userMail" style="font-weight:bold; color:var(--oracle-blue);"></p>
-      <button id="doLogout" class="btn-main" style="background:var(--oracle-red)">Sign Out</button>
-    </div>
-  </div>
-</div>
-
-<div id="uploadModal" class="modal-overlay">
-  <div class="modal-box">
-    <button class="close-modal">&times;</button>
-    <h3>Upload Document</h3>
-    <select id="upCat" class="input-field">
-      <option>Working Instructions</option>
-      <option>Standard Operating Procedures</option>
-      <option>Functional Specifications</option>
-      <option>Templates</option>
-    </select>
-    <input type="text" id="upSub" class="input-field" placeholder="Subject Name">
-    <input type="file" id="upFile" class="input-field">
-    <button id="doUpload" class="btn-main">Upload to Database</button>
-    <p id="upStatus" style="text-align:center; font-size:12px; margin-top:10px;"></p>
-  </div>
-</div>
-
-<div id="admin-toolbar">
-  <button class="btn-admin" onclick="document.getElementById('uploadModal').style.display='flex'">
-    <i class="fas fa-plus-circle"></i> ADD FILE
-  </button>
-</div>
-
 <script>
-  // FIREBASE CONFIGURATION
-  const firebaseConfig = {
-    apiKey: "AIzaSyBaSuFhNUeghfXEznYCHxYnagkjiojfO_M",
-    authDomain: "helpdeskrpharmacy.firebaseapp.com",
-    databaseURL: "https://helpdeskrpharmacy-default-rtdb.firebaseio.com",
-    projectId: "helpdeskrpharmacy",
-    storageBucket: "helpdeskrpharmacy.appspot.com",
-    messagingSenderId: "776189919696",
-    appId: "1:776189919696:web:ab3be5e265dbfff8faf9d5"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth(), db = firebase.database(), storage = firebase.storage();
+// ACCORDION
+document.getElementById('accordion-container').addEventListener('click', (e) => {
+  const head = e.target.closest('.card-header');
+  if(head) {
+    const body = head.nextElementSibling;
+    const isOpen = body.style.display === 'block';
+    body.style.display = isOpen ? 'none' : 'block';
+    head.querySelector('.arrow').style.transform = isOpen ? 'rotate(0)' : 'rotate(180deg)';
+  }
+});
 
-  // MODAL HANDLERS
-  const closeAll = () => document.querySelectorAll('.modal-overlay').forEach(m => m.style.display='none');
-  document.querySelectorAll('.close-modal').forEach(b => b.onclick = closeAll);
-  
-  document.getElementById('login-trigger').onclick = () => {
-    document.getElementById('loginModal').style.display = 'flex';
-  };
-
-  // AUTHENTICATION LOGIC
-  document.getElementById('doLogin').onclick = () => {
-    auth.signInWithEmailAndPassword(document.getElementById('loginEmail').value, document.getElementById('loginPass').value)
-      .then(closeAll).catch(e => document.getElementById('loginError').innerText = e.message);
-  };
-  document.getElementById('doLogout').onclick = () => auth.signOut().then(closeAll);
-
-  auth.onAuthStateChanged(user => {
-    document.getElementById('admin-toolbar').style.display = user ? 'block' : 'none';
-    document.getElementById('login-view').style.display = user ? 'none' : 'block';
-    document.getElementById('profile-view').style.display = user ? 'block' : 'none';
-    if(user) {
-        document.getElementById('userMail').innerText = user.email;
-        document.querySelector('#login-trigger span').innerText = "LOGOUT";
-        document.getElementById('login-trigger').style.backgroundColor = "#333";
-    } else {
-        document.querySelector('#login-trigger span').innerText = "ADMIN LOGIN";
-        document.getElementById('login-trigger').style.backgroundColor = "var(--oracle-red)";
-    }
+// SEARCH
+document.getElementById('searchBar').onkeyup = function() {
+  const q = this.value.toLowerCase();
+  document.querySelectorAll('.card').forEach(c => {
+    c.style.display = c.innerText.toLowerCase().includes(q) ? 'block' : 'none';
   });
-
-  // FILE UPLOAD LOGIC
-  document.getElementById('doUpload').onclick = () => {
-    const file = document.getElementById('upFile').files[0];
-    const cat = document.getElementById('upCat').value;
-    const sub = document.getElementById('upSub').value;
-    if(!file || !sub) return alert("Fill all fields.");
-    
-    document.getElementById('upStatus').innerText = "Uploading...";
-    storage.ref('docs/' + Date.now() + "_" + file.name).put(file).then(snap => snap.ref.getDownloadURL()).then(url => {
-      db.ref('files').push({ category: cat, subject: sub, name: file.name, url: url });
-      document.getElementById('upStatus').innerText = "";
-      closeAll();
-    }).catch(err => alert(err.message));
-  };
-
-  // REAL-TIME DATA FETCHING
-  db.ref('files').on('value', snap => {
-    document.querySelectorAll('.card-body').forEach(b => b.innerHTML = '');
-    snap.forEach(child => {
-      const data = child.val();
-      const parentId = 'body-' + data.category.replace(/\s+/g, '-');
-      const parent = document.getElementById(parentId);
-      if(parent) {
-        let block = parent.querySelector(`[data-sub="${data.subject}"]`);
-        if(!block) {
-          block = document.createElement('div');
-          block.className = 'subject-section';
-          block.setAttribute('data-sub', data.subject);
-          block.innerHTML = `<div style="font-weight:600; color:#234e70; padding:10px 0; cursor:pointer; border-bottom:1px solid #ddd;">${data.subject}</div><ul style="list-style:none; padding:10px 0 10px 15px; margin:0;"></ul>`;
-          parent.appendChild(block);
-        }
-        const li = document.createElement('li');
-        li.style.margin = "8px 0";
-        li.innerHTML = `<a href="${data.url}" target="_blank" style="color:#333; text-decoration:none; font-size:14px; display:flex; align-items:center; gap:10px;"><i class="far fa-file-pdf" style="color:#eb1000"></i> ${data.name}</a>`;
-        block.querySelector('ul').appendChild(li);
-      }
-    });
-  });
-
-  // UI INTERACTION (ACCORDION)
-  document.getElementById('accordion-container').addEventListener('click', (e) => {
-    const head = e.target.closest('.card-header');
-    if(head) {
-      const body = head.nextElementSibling;
-      const isOpen = body.style.display === 'block';
-      body.style.display = isOpen ? 'none' : 'block';
-      head.querySelector('.arrow').style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
-    }
-  });
-
-  // SEARCH FUNCTIONALITY
-  document.getElementById('searchBar').onkeyup = function() {
-    const query = this.value.toLowerCase();
-    document.querySelectorAll('.card').forEach(card => {
-      card.style.display = card.innerText.toLowerCase().includes(query) ? "block" : "none";
-    });
-  };
+};
 </script>
+
 </body>
 </html>
