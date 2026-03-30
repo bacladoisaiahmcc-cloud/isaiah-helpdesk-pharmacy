@@ -11,61 +11,79 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-  /* --- 100% GOODS NGA SIZING --- */
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;        
-    flex-shrink: 0; 
-}
-.search-wrapper {
-    position: relative;
-    width: 180px; 
-}
-.search-wrapper input {
-    width: 100%;
-    padding: 7px 10px 7px 32px; 
-    border-radius: 4px;
-    border: none;
-    font-size: 14px;
-    outline: none;
-}
-.search-icon {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #666;
-    font-size: 14px;
-}
+  <style>
+    :root { --oracle-blue: #234e70; --oracle-red: #eb1000; --bg: #f4f7f9; }
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; background-color: var(--bg); color: #333; }
 
-#login-trigger {
-    background-color: #eb1000; /* Oracle Red */
-    color: white;
-    padding: 7px 15px; 
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: bold;
-    font-size: 12px;
-    white-space: nowrap;
-    border: none;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: 0.2s;
-}
-  
-#login-trigger:hover {
-    background-color: #c00d00;
-    transform: translateY(-1px);
-}
-    <i class="fas fa-user-shield"></i>
-    <span>ADMIN LOGIN</span>
-</div>
+    /* FIXED HEADER */
+    .header { 
+      background-color: var(--oracle-blue); 
+      color: white; 
+      padding: 10px 5%; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      border-bottom: 4px solid var(--oracle-red);
+      position: sticky; top: 0; z-index: 1000;
     }
-    #login-trigger:hover { background-color: #c00d00; transform: translateY(-1px); }
-   
+    .header-left { display: flex; align-items: center; gap: 15px; }
+    .oracle-logo { height: 25px; filter: brightness(0) invert(1); }
+    .header-title { font-size: 20px; font-weight: 400; margin: 0; border-left: 1px solid rgba(255,255,255,0.3); padding-left: 15px; }
+
+    /* SEARCH & LOGIN SIZING */
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 15px; /* Distansya tali sa search ug button */
+      flex-shrink: 0;
+    }
+
+    .search-wrapper {
+      position: relative;
+      width: 180px; /* Saktong size para dili dako ra kaayo */
+    }
+
+    .search-wrapper input {
+      width: 100%;
+      padding: 7px 10px 7px 32px;
+      border-radius: 4px;
+      border: none;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #666;
+      font-size: 14px;
+    }
+
+    #login-trigger {
+      background-color: var(--oracle-red);
+      color: white;
+      padding: 7px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: bold;
+      font-size: 12px;
+      white-space: nowrap;
+      border: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: 0.2s;
+    }
+
+    #login-trigger:hover {
+      background-color: #c00d00;
+      transform: translateY(-1px);
+    }
+
+    /* Layout & Cards */
     .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
     .card { background: white; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
     .card-header { 
@@ -77,6 +95,7 @@
     .arrow { color: #888; font-size: 14px; transition: transform 0.3s; }
     .card-body { display: none; padding: 15px 30px 25px 65px; border-top: 1px solid #eee; background: #fafafa; }
 
+    /* Modals */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 2000; }
     .modal-box { background: white; padding: 30px; border-radius: 8px; width: 330px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
     .close-modal { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; border: none; background: none; color: #888; }
@@ -167,7 +186,6 @@
 </div>
 
 <script>
-  
   const firebaseConfig = {
     apiKey: "AIzaSyBaSuFhNUeghfXEznYCHxYnagkjiojfO_M",
     authDomain: "helpdeskrpharmacy.firebaseapp.com",
