@@ -25,7 +25,6 @@ body {
   background-color: var(--bg); 
 }
 
-/* HEADER */
 .header { 
   background-color: var(--oracle-blue); 
   color: white; 
@@ -48,9 +47,9 @@ body {
 
 .header-title {
   font-size: 20px;
+  margin: 0;
 }
 
-/* SEARCH */
 .search-wrapper {
   position: relative;
   width: 260px;
@@ -61,6 +60,7 @@ body {
   padding: 10px 12px 10px 35px;
   border-radius: 6px;
   border: none;
+  box-sizing: border-box;
 }
 
 .search-icon {
@@ -71,14 +71,12 @@ body {
   color: #888;
 }
 
-/* CONTAINER */
 .container { 
   max-width: 950px; 
   margin: 30px auto; 
   padding: 0 15px;
 }
 
-/* CARDS */
 .card {
   background: white;
   border-radius: 10px;
@@ -96,6 +94,7 @@ body {
   cursor: pointer;
   border: none;
   background: white;
+  font-size: 15px;
 }
 
 .card-header:hover {
@@ -118,7 +117,6 @@ body {
   background: #fafafa;
 }
 
-/* SUBJECT */
 .subject-section div {
   font-weight: 600;
   color: var(--oracle-blue);
@@ -126,7 +124,6 @@ body {
   border-bottom: 1px solid #ddd;
 }
 
-/* FILE */
 .subject-section li {
   margin: 6px 0;
 }
@@ -139,7 +136,6 @@ body {
   background: none;
 }
 
-/* BUTTONS */
 #login-trigger {
   position: fixed;
   bottom: 25px;
@@ -150,6 +146,18 @@ body {
   border-radius: 50px;
   border: none;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(235,16,0,0.4);
+  transition: background 0.2s;
+  z-index: 100;
+}
+
+#login-trigger:hover {
+  background: #c50e00;
 }
 
 #admin-toolbar {
@@ -157,6 +165,101 @@ body {
   bottom: 80px;
   right: 25px;
   display: none;
+  z-index: 100;
+}
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-box {
+  background: white;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 420px;
+  padding: 30px 30px 24px;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #999;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: #333;
+}
+
+.modal-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 22px 0;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d0d5dd;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.modal-input:focus {
+  border-color: var(--oracle-blue);
+}
+
+.modal-error {
+  color: var(--oracle-red);
+  font-size: 13px;
+  margin-bottom: 10px;
+  min-height: 18px;
+}
+
+.modal-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 6px;
+  background: var(--oracle-red);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: background 0.2s;
+}
+
+.modal-btn:hover {
+  background: #c50e00;
+}
+
+.modal-btn:disabled {
+  background: #f08080;
+  cursor: not-allowed;
 }
 </style>
 </head>
@@ -168,7 +271,6 @@ body {
     <img src="https://upload.wikimedia.org/wikipedia/commons/5/50/Oracle_logo.svg" class="oracle-logo">
     <h1 class="header-title">How can we help you today?</h1>
   </div>
-
   <div class="search-wrapper">
     <i class="fas fa-search search-icon"></i>
     <input type="text" id="searchBar" placeholder="Search...">
@@ -183,6 +285,36 @@ body {
   <button onclick="uploadFile()" style="padding:10px;background:black;color:white;border:none;border-radius:20px;cursor:pointer;">
     + Upload
   </button>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="login-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <h2 class="modal-title">Login</h2>
+    <div id="modal-logged-out">
+      <input class="modal-input" type="email" id="modal-email" placeholder="Email">
+      <input class="modal-input" type="password" id="modal-password" placeholder="Password">
+      <div class="modal-error" id="modal-error"></div>
+      <button class="modal-btn" id="modal-login-btn" onclick="doLogin()">Login</button>
+    </div>
+    <div id="modal-logged-in" style="display:none;">
+      <button class="modal-btn" onclick="doLogout()">Logout</button>
+      <button class="modal-btn" onclick="showChangePassword()">Change Password</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGE PASSWORD MODAL -->
+<div class="modal-overlay" id="change-password-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeChangePassword()">&times;</button>
+    <h2 class="modal-title">Change Password</h2>
+    <input class="modal-input" type="password" id="new-password" placeholder="New Password">
+    <input class="modal-input" type="password" id="confirm-password" placeholder="Confirm New Password">
+    <div class="modal-error" id="change-pw-error"></div>
+    <button class="modal-btn" onclick="doChangePassword()">Update Password</button>
+  </div>
 </div>
 
 <main class="container" id="accordion-container">
@@ -210,118 +342,212 @@ body {
 </main>
 
 <script>
-// FIREBASE
+// ─── FIREBASE SETUP ───────────────────────────────────────────────────────────
+// IMPORTANT: Replace the values below with your actual Firebase project config.
+// Go to Firebase Console → Project Settings → Your apps → SDK setup and config
 const firebaseConfig = {
-  apiKey: "AIzaSy...",
+  apiKey: "PASTE_YOUR_REAL_API_KEY_HERE",
   authDomain: "helpdeskrpharmacy.firebaseapp.com",
   databaseURL: "https://helpdeskrpharmacy-default-rtdb.firebaseio.com",
   projectId: "helpdeskrpharmacy",
   storageBucket: "helpdeskrpharmacy.appspot.com",
 };
 
-firebase.initializeApp(firebaseConfig);
+let auth = null;
+let db = null;
+let storage = null;
+let firebaseReady = false;
 
-const auth = firebase.auth();
-const db = firebase.database();
-const storage = firebase.storage();
+try {
+  firebase.initializeApp(firebaseConfig);
+  auth = firebase.auth();
+  db = firebase.database();
+  storage = firebase.storage();
+  firebaseReady = true;
+} catch(e) {
+  console.error("Firebase init failed:", e.message);
+}
 
-// LOGIN
-document.getElementById('login-trigger').onclick = () => {
-  if(auth.currentUser){
-    auth.signOut();
-    return;
-  }
-  const email = prompt("Email:");
-  const pass = prompt("Password:");
-  auth.signInWithEmailAndPassword(email, pass)
-    .then(()=>alert("Login Success"))
-    .catch(e=>alert(e.message));
-};
+// ─── MODAL HELPERS ────────────────────────────────────────────────────────────
+function openModal() {
+  document.getElementById('login-modal').classList.add('active');
+  document.getElementById('modal-error').textContent = '';
+  document.getElementById('modal-email').value = '';
+  document.getElementById('modal-password').value = '';
+}
 
-// AUTH STATE
-auth.onAuthStateChanged(user=>{
-  document.getElementById('admin-toolbar').style.display = user ? "block" : "none";
-  document.getElementById('login-trigger').innerText = user ? "LOGOUT" : "ADMIN LOGIN";
+function closeModal() {
+  document.getElementById('login-modal').classList.remove('active');
+}
+
+function showChangePassword() {
+  closeModal();
+  document.getElementById('change-pw-error').textContent = '';
+  document.getElementById('new-password').value = '';
+  document.getElementById('confirm-password').value = '';
+  document.getElementById('change-password-modal').classList.add('active');
+}
+
+function closeChangePassword() {
+  document.getElementById('change-password-modal').classList.remove('active');
+}
+
+document.getElementById('login-modal').addEventListener('click', function(e){
+  if (e.target === this) closeModal();
+});
+document.getElementById('change-password-modal').addEventListener('click', function(e){
+  if (e.target === this) closeChangePassword();
 });
 
-// UPLOAD
-function uploadFile(){
+document.getElementById('login-trigger').onclick = () => {
+  openModal();
+};
+
+// ─── LOGIN ────────────────────────────────────────────────────────────────────
+function doLogin() {
+  if (!firebaseReady) {
+    document.getElementById('modal-error').textContent = 'Firebase is not configured. Please add your API key.';
+    return;
+  }
+  const email = document.getElementById('modal-email').value.trim();
+  const pass = document.getElementById('modal-password').value;
+  const btn = document.getElementById('modal-login-btn');
+  const errEl = document.getElementById('modal-error');
+
+  if (!email || !pass) {
+    errEl.textContent = 'Please enter your email and password.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Logging in...';
+  errEl.textContent = '';
+
+  auth.signInWithEmailAndPassword(email, pass)
+    .then(() => { closeModal(); })
+    .catch(e => { errEl.textContent = e.message; })
+    .finally(() => {
+      btn.disabled = false;
+      btn.textContent = 'Login';
+    });
+}
+
+document.getElementById('modal-email').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+document.getElementById('modal-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+// ─── LOGOUT ───────────────────────────────────────────────────────────────────
+function doLogout() {
+  if (!firebaseReady) return;
+  auth.signOut().then(() => { closeModal(); });
+}
+
+// ─── CHANGE PASSWORD ──────────────────────────────────────────────────────────
+function doChangePassword() {
+  const newPass = document.getElementById('new-password').value;
+  const confirmPass = document.getElementById('confirm-password').value;
+  const errEl = document.getElementById('change-pw-error');
+
+  if (!newPass || !confirmPass) { errEl.textContent = 'Please fill in both fields.'; return; }
+  if (newPass !== confirmPass) { errEl.textContent = 'Passwords do not match.'; return; }
+  if (newPass.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; return; }
+
+  errEl.textContent = '';
+  auth.currentUser.updatePassword(newPass)
+    .then(() => {
+      closeChangePassword();
+      alert('Password updated successfully.');
+    })
+    .catch(e => { errEl.textContent = e.message; });
+}
+
+// ─── AUTH STATE ───────────────────────────────────────────────────────────────
+if (firebaseReady) {
+  auth.onAuthStateChanged(user => {
+    document.getElementById('admin-toolbar').style.display = user ? "block" : "none";
+    if (user) {
+      document.getElementById('login-trigger').innerHTML = '<i class="fas fa-user-shield"></i> ADMIN';
+      document.getElementById('modal-logged-out').style.display = 'none';
+      document.getElementById('modal-logged-in').style.display = 'block';
+    } else {
+      document.getElementById('login-trigger').innerHTML = '<i class="fas fa-user-shield"></i> ADMIN LOGIN';
+      document.getElementById('modal-logged-out').style.display = 'block';
+      document.getElementById('modal-logged-in').style.display = 'none';
+    }
+  });
+}
+
+// ─── UPLOAD ───────────────────────────────────────────────────────────────────
+function uploadFile() {
+  if (!firebaseReady) return;
   const cat = prompt("Category:");
   const sub = prompt("Subject:");
-
   const input = document.createElement('input');
   input.type = "file";
-
-  input.onchange = e=>{
+  input.onchange = e => {
     const file = e.target.files[0];
-    const ref = storage.ref('docs/'+Date.now()+"_"+file.name);
-
+    const ref = storage.ref('docs/' + Date.now() + "_" + file.name);
     ref.put(file)
-    .then(s=>s.ref.getDownloadURL())
-    .then(url=>{
-      db.ref('files').push({
-        category: cat,
-        subject: sub,
-        name: file.name,
-        url: url
+      .then(s => s.ref.getDownloadURL())
+      .then(url => {
+        db.ref('files').push({ category: cat, subject: sub, name: file.name, url: url });
       });
-    });
   };
   input.click();
 }
 
-// DELETE
-function deleteFile(id){
-  if(confirm("Delete?")){
-    db.ref('files/'+id).remove();
-  }
+// ─── DELETE ───────────────────────────────────────────────────────────────────
+function deleteFile(id) {
+  if (!firebaseReady) return;
+  if (confirm("Delete?")) { db.ref('files/' + id).remove(); }
 }
 
-// FETCH
-db.ref('files').on('value', snap=>{
-  document.querySelectorAll('.card-body').forEach(b=>b.innerHTML="");
-
-  snap.forEach(c=>{
-    const d = c.val();
-    const id = c.key;
-
-    const parent = document.getElementById('body-'+d.category.replace(/\s+/g,'-'));
-    if(!parent) return;
-
-    let block = parent.querySelector(`[data-sub="${d.subject}"]`);
-    if(!block){
-      block = document.createElement('div');
-      block.className = "subject-section";
-      block.setAttribute("data-sub", d.subject);
-      block.innerHTML = `<div>${d.subject}</div><ul></ul>`;
-      parent.appendChild(block);
-    }
-
-    const li = document.createElement('li');
-    li.innerHTML = `
-      <a href="${d.url}" target="_blank">${d.name}</a>
-      ${auth.currentUser ? `<button class="delete-btn" onclick="deleteFile('${id}')">Delete</button>`:''}
-    `;
-    block.querySelector('ul').appendChild(li);
+// ─── FETCH FILES ──────────────────────────────────────────────────────────────
+if (firebaseReady) {
+  db.ref('files').on('value', snap => {
+    document.querySelectorAll('.card-body').forEach(b => b.innerHTML = "");
+    snap.forEach(c => {
+      const d = c.val();
+      const id = c.key;
+      const parent = document.getElementById('body-' + d.category.replace(/\s+/g, '-'));
+      if (!parent) return;
+      let block = parent.querySelector(`[data-sub="${d.subject}"]`);
+      if (!block) {
+        block = document.createElement('div');
+        block.className = "subject-section";
+        block.setAttribute("data-sub", d.subject);
+        block.innerHTML = `<div>${d.subject}</div><ul></ul>`;
+        parent.appendChild(block);
+      }
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <a href="${d.url}" target="_blank">${d.name}</a>
+        ${auth.currentUser ? `<button class="delete-btn" onclick="deleteFile('${id}')">Delete</button>` : ''}
+      `;
+      block.querySelector('ul').appendChild(li);
+    });
   });
-});
+}
 
-// ACCORDION
-document.getElementById('accordion-container').addEventListener('click', e=>{
+// ─── ACCORDION ────────────────────────────────────────────────────────────────
+document.getElementById('accordion-container').addEventListener('click', e => {
   const h = e.target.closest('.card-header');
-  if(h){
+  if (h) {
     const b = h.nextElementSibling;
-    const open = b.style.display==="block";
-    b.style.display = open?"none":"block";
-    h.querySelector('.arrow').style.transform = open?"rotate(0)":"rotate(180deg)";
+    const open = b.style.display === "block";
+    b.style.display = open ? "none" : "block";
+    h.querySelector('.arrow').style.transform = open ? "rotate(0)" : "rotate(180deg)";
   }
 });
 
-// SEARCH
-document.getElementById('searchBar').onkeyup = function(){
-  const q=this.value.toLowerCase();
-  document.querySelectorAll('.card').forEach(c=>{
-    c.style.display = c.innerText.toLowerCase().includes(q)?"block":"none";
+// ─── SEARCH ───────────────────────────────────────────────────────────────────
+document.getElementById('searchBar').onkeyup = function() {
+  const q = this.value.toLowerCase();
+  document.querySelectorAll('.card').forEach(c => {
+    c.style.display = c.innerText.toLowerCase().includes(q) ? "block" : "none";
   });
 };
 </script>
