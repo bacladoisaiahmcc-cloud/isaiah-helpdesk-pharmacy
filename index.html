@@ -48,7 +48,6 @@ body {
 
 .header-title {
   font-size: 20px;
-  font-weight: 400;
 }
 
 /* SEARCH */
@@ -97,8 +96,6 @@ body {
   cursor: pointer;
   border: none;
   background: white;
-  font-size: 15px;
-  font-weight: 500;
 }
 
 .card-header:hover {
@@ -112,15 +109,13 @@ body {
 }
 
 .arrow {
-  transition: transform 0.3s;
-  color: #777;
+  transition: 0.3s;
 }
 
 .card-body {
   display: none;
   padding: 15px 25px;
   background: #fafafa;
-  border-top: 1px solid #eee;
 }
 
 /* SUBJECT */
@@ -131,25 +126,20 @@ body {
   border-bottom: 1px solid #ddd;
 }
 
-.subject-section ul {
-  list-style: none;
-  padding-left: 10px;
+/* FILE */
+.subject-section li {
+  margin: 6px 0;
 }
 
-.subject-section li a {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  color: #444;
-  font-size: 14px;
+.delete-btn {
+  margin-left: 10px;
+  color: red;
+  cursor: pointer;
+  border: none;
+  background: none;
 }
 
-.subject-section li a:hover {
-  color: var(--oracle-blue);
-}
-
-/* ADMIN BUTTON */
+/* BUTTONS */
 #login-trigger {
   position: fixed;
   bottom: 25px;
@@ -160,37 +150,6 @@ body {
   border-radius: 50px;
   border: none;
   cursor: pointer;
-}
-
-/* MODALS */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
-  display: none;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-box {
-  background: white;
-  padding: 25px;
-  border-radius: 8px;
-  width: 320px;
-}
-
-.input-field {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 12px;
-}
-
-.btn-main {
-  width: 100%;
-  padding: 10px;
-  background: var(--oracle-blue);
-  color: white;
-  border: none;
 }
 
 #admin-toolbar {
@@ -220,59 +179,149 @@ body {
   <i class="fas fa-user-shield"></i> ADMIN LOGIN
 </button>
 
+<div id="admin-toolbar">
+  <button onclick="uploadFile()" style="padding:10px;background:black;color:white;border:none;border-radius:20px;cursor:pointer;">
+    + Upload
+  </button>
+</div>
+
 <main class="container" id="accordion-container">
 
 <div class="card">
-<button class="card-header">
-<span><i class="fas fa-book"></i> Working Instructions</span>
-<i class="fas fa-caret-down arrow"></i>
-</button>
+<button class="card-header"><span><i class="fas fa-book"></i> Working Instructions</span><i class="fas fa-caret-down arrow"></i></button>
 <div class="card-body" id="body-Working-Instructions"></div>
 </div>
 
 <div class="card">
-<button class="card-header">
-<span><i class="fas fa-file-alt"></i> Standard Operating Procedures</span>
-<i class="fas fa-caret-down arrow"></i>
-</button>
+<button class="card-header"><span><i class="fas fa-file-alt"></i> Standard Operating Procedures</span><i class="fas fa-caret-down arrow"></i></button>
 <div class="card-body" id="body-Standard-Operating-Procedures"></div>
 </div>
 
 <div class="card">
-<button class="card-header">
-<span><i class="fas fa-layer-group"></i> Functional Specifications</span>
-<i class="fas fa-caret-down arrow"></i>
-</button>
+<button class="card-header"><span><i class="fas fa-layer-group"></i> Functional Specifications</span><i class="fas fa-caret-down arrow"></i></button>
 <div class="card-body" id="body-Functional-Specifications"></div>
 </div>
 
 <div class="card">
-<button class="card-header">
-<span><i class="fas fa-file"></i> Templates</span>
-<i class="fas fa-caret-down arrow"></i>
-</button>
+<button class="card-header"><span><i class="fas fa-file"></i> Templates</span><i class="fas fa-caret-down arrow"></i></button>
 <div class="card-body" id="body-Templates"></div>
 </div>
 
 </main>
 
 <script>
+// FIREBASE
+const firebaseConfig = {
+  apiKey: "AIzaSy...",
+  authDomain: "helpdeskrpharmacy.firebaseapp.com",
+  databaseURL: "https://helpdeskrpharmacy-default-rtdb.firebaseio.com",
+  projectId: "helpdeskrpharmacy",
+  storageBucket: "helpdeskrpharmacy.appspot.com",
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.database();
+const storage = firebase.storage();
+
+// LOGIN
+document.getElementById('login-trigger').onclick = () => {
+  if(auth.currentUser){
+    auth.signOut();
+    return;
+  }
+  const email = prompt("Email:");
+  const pass = prompt("Password:");
+  auth.signInWithEmailAndPassword(email, pass)
+    .then(()=>alert("Login Success"))
+    .catch(e=>alert(e.message));
+};
+
+// AUTH STATE
+auth.onAuthStateChanged(user=>{
+  document.getElementById('admin-toolbar').style.display = user ? "block" : "none";
+  document.getElementById('login-trigger').innerText = user ? "LOGOUT" : "ADMIN LOGIN";
+});
+
+// UPLOAD
+function uploadFile(){
+  const cat = prompt("Category:");
+  const sub = prompt("Subject:");
+
+  const input = document.createElement('input');
+  input.type = "file";
+
+  input.onchange = e=>{
+    const file = e.target.files[0];
+    const ref = storage.ref('docs/'+Date.now()+"_"+file.name);
+
+    ref.put(file)
+    .then(s=>s.ref.getDownloadURL())
+    .then(url=>{
+      db.ref('files').push({
+        category: cat,
+        subject: sub,
+        name: file.name,
+        url: url
+      });
+    });
+  };
+  input.click();
+}
+
+// DELETE
+function deleteFile(id){
+  if(confirm("Delete?")){
+    db.ref('files/'+id).remove();
+  }
+}
+
+// FETCH
+db.ref('files').on('value', snap=>{
+  document.querySelectorAll('.card-body').forEach(b=>b.innerHTML="");
+
+  snap.forEach(c=>{
+    const d = c.val();
+    const id = c.key;
+
+    const parent = document.getElementById('body-'+d.category.replace(/\s+/g,'-'));
+    if(!parent) return;
+
+    let block = parent.querySelector(`[data-sub="${d.subject}"]`);
+    if(!block){
+      block = document.createElement('div');
+      block.className = "subject-section";
+      block.setAttribute("data-sub", d.subject);
+      block.innerHTML = `<div>${d.subject}</div><ul></ul>`;
+      parent.appendChild(block);
+    }
+
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <a href="${d.url}" target="_blank">${d.name}</a>
+      ${auth.currentUser ? `<button class="delete-btn" onclick="deleteFile('${id}')">Delete</button>`:''}
+    `;
+    block.querySelector('ul').appendChild(li);
+  });
+});
+
 // ACCORDION
-document.getElementById('accordion-container').addEventListener('click', (e) => {
-  const head = e.target.closest('.card-header');
-  if(head) {
-    const body = head.nextElementSibling;
-    const isOpen = body.style.display === 'block';
-    body.style.display = isOpen ? 'none' : 'block';
-    head.querySelector('.arrow').style.transform = isOpen ? 'rotate(0)' : 'rotate(180deg)';
+document.getElementById('accordion-container').addEventListener('click', e=>{
+  const h = e.target.closest('.card-header');
+  if(h){
+    const b = h.nextElementSibling;
+    const open = b.style.display==="block";
+    b.style.display = open?"none":"block";
+    h.querySelector('.arrow').style.transform = open?"rotate(0)":"rotate(180deg)";
   }
 });
 
 // SEARCH
-document.getElementById('searchBar').onkeyup = function() {
-  const q = this.value.toLowerCase();
-  document.querySelectorAll('.card').forEach(c => {
-    c.style.display = c.innerText.toLowerCase().includes(q) ? 'block' : 'none';
+document.getElementById('searchBar').onkeyup = function(){
+  const q=this.value.toLowerCase();
+  document.querySelectorAll('.card').forEach(c=>{
+    c.style.display = c.innerText.toLowerCase().includes(q)?"block":"none";
   });
 };
 </script>
